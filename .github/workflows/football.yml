@@ -2,7 +2,7 @@ name: Football Video — 2AM VN
 
 on:
   schedule:
-    - cron: '58 14 * * *'  # TEST: 21:58 Vietnam (UTC+7) — đổi lại thành '0 19 * * *' sau khi test
+    - cron: '5 15 * * *'  # TEST: 22:05 Vietnam (UTC+7) — đổi lại thành '0 19 * * *' sau khi test
   workflow_dispatch:       # Cho phép chạy thủ công để test
 
 jobs:
