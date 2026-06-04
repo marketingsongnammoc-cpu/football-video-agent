@@ -69,15 +69,12 @@ class VnExpressAdapter(BaseAdapter):
             seen.add(u)
             images.append(u)
 
-        # 1. og:image — luôn có, ảnh do ban biên tập chọn
-        for pat in [
-            r'property="og:image"\s+content="([^"]+)"',
-            r'content="([^"]+)"\s+property="og:image"',
-        ]:
-            m = re.search(pat, html, re.IGNORECASE)
-            if m:
-                _add(m.group(1), require_cdn=False)
-                break
+        # 1. og:image — tìm tag trước, rồi extract content (không quan tâm thứ tự attribute)
+        og_tag = re.search(r'<meta[^>]+og:image[^>]*>', html, re.IGNORECASE)
+        if og_tag:
+            content_m = re.search(r'content=["\']([^"\']+)["\']', og_tag.group(0), re.IGNORECASE)
+            if content_m:
+                _add(content_m.group(1), require_cdn=False)
 
         # 2. <meta itemprop="url" content="..."> — ảnh trong body bài viết
         for m in re.finditer(r'itemprop="url"\s+content="(https://[^"]+vnecdn[^"]+)"', html):

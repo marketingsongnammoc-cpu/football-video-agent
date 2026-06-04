@@ -30,22 +30,6 @@ jobs:
       - name: Install Python packages
         run: pip install -r requirements.txt
 
-      - name: Debug VnExpress fetch
-        run: |
-          cat > /tmp/dbg.py << 'PYEOF'
-          import requests
-          h = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", "Accept-Language": "vi-VN,vi;q=0.9"}
-          r = requests.get("https://vnexpress.net/di-maria-se-khong-co-cuoc-so-tai-nao-nhu-ronaldo-va-messi-5081691.html", headers=h, timeout=15)
-          print("Status:", r.status_code, "| URL:", r.url)
-          html = r.text
-          print("og:image found:", "og:image" in html)
-          print("vnecdn found:", "vnecdn" in html)
-          print("title-detail found:", "title-detail" in html)
-          print("--- First 800 chars ---")
-          print(html[:800])
-          PYEOF
-          python /tmp/dbg.py
-
       - name: Run football video agent
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
