@@ -1,0 +1,112 @@
+{
+  "bongda": {
+    "enabled": false,
+    "branch": "vn",
+    "priority": 1,
+    "homepage": "https://bongda.com.vn",
+    "language": "vi",
+    "tabloid": false,
+    "image_cdn_whitelist": ["bongda.com.vn", "static.bongda.com.vn"],
+    "fetcher": "requests"
+  },
+  "vnexpress": {
+    "enabled": true,
+    "branch": "vn",
+    "priority": 2,
+    "homepage": "https://vnexpress.net/the-thao/bong-da",
+    "language": "vi",
+    "tabloid": false,
+    "image_cdn_whitelist": ["i1-thethao.vnecdn.net", "vcdn-thethao.vnecdn.net", "i1-vnexpress.vnecdn.net"],
+    "fetcher": "requests"
+  },
+  "tuoitre": {
+    "enabled": false,
+    "branch": "vn",
+    "priority": 3,
+    "homepage": "https://tuoitre.vn/the-thao/bong-da.htm",
+    "language": "vi",
+    "tabloid": false,
+    "image_cdn_whitelist": ["cdn.tuoitre.vn", "static.tuoitre.vn"],
+    "fetcher": "requests"
+  },
+  "thanhnien": {
+    "enabled": false,
+    "branch": "vn",
+    "priority": 4,
+    "homepage": "https://thanhnien.vn/the-thao/bong-da.htm",
+    "language": "vi",
+    "tabloid": false,
+    "image_cdn_whitelist": ["images.thanhnien.vn", "image.thanhnien.vn"],
+    "fetcher": "requests"
+  },
+  "bongdaplus": {
+    "enabled": false,
+    "branch": "vn",
+    "priority": 5,
+    "homepage": "https://bongdaplus.vn",
+    "language": "vi",
+    "tabloid": false,
+    "image_cdn_whitelist": ["img.bongdaplus.vn", "static.bongdaplus.vn"],
+    "fetcher": "requests"
+  },
+  "goal": {
+    "enabled": false,
+    "branch": "international",
+    "priority": 20,
+    "homepage": "https://www.goal.com/en/news",
+    "language": "en",
+    "tabloid": false,
+    "image_cdn_whitelist": ["assets.goal.com", "images.goal.com"],
+    "fetcher": "requests"
+  },
+  "thesun": {
+    "enabled": false,
+    "branch": "tabloid",
+    "priority": 30,
+    "homepage": "https://www.thesun.co.uk/sport/football",
+    "language": "en",
+    "tabloid": true,
+    "image_cdn_whitelist": ["www.thesun.co.uk"],
+    "fetcher": "requests"
+  },
+  "dailymail": {
+    "enabled": false,
+    "branch": "tabloid",
+    "priority": 31,
+    "homepage": "https://www.dailymail.co.uk/sport/football",
+    "language": "en",
+    "tabloid": true,
+    "image_cdn_whitelist": ["i.dailymail.co.uk"],
+    "fetcher": "playwright"
+  },
+  "mirror": {
+    "enabled": false,
+    "branch": "tabloid",
+    "priority": 32,
+    "homepage": "https://www.mirror.co.uk/sport/football",
+    "language": "en",
+    "tabloid": true,
+    "image_cdn_whitelist": ["i2-prod.mirror.co.uk"],
+    "fetcher": "requests"
+  },
+  "marca": {
+    "enabled": false,
+    "branch": "tabloid",
+    "priority": 33,
+    "homepage": "https://www.marca.com",
+    "language": "es",
+    "tabloid": true,
+    "image_cdn_whitelist": ["phantom-marca.unidadeditorial.es"],
+    "fetcher": "requests"
+  },
+  "donbalon": {
+    "enabled": false,
+    "branch": "tabloid",
+    "priority": 34,
+    "homepage": "https://www.donbalon.com",
+    "language": "es",
+    "tabloid": true,
+    "image_cdn_whitelist": ["www.donbalon.com"],
+    "fetcher": "requests"
+  }
+}

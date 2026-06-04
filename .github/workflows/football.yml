@@ -1,0 +1,51 @@
+name: Football Video — 2AM VN
+
+on:
+  schedule:
+    - cron: '58 14 * * *'  # TEST: 21:58 Vietnam (UTC+7) — đổi lại thành '0 19 * * *' sau khi test
+  workflow_dispatch:       # Cho phép chạy thủ công để test
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Python packages
+        run: pip install -r requirements.txt
+
+      - name: Run football video agent
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          WOOPSOCIAL_API_KEY: ${{ secrets.WOOPSOCIAL_API_KEY }}
+          GOOGLE_TTS_API_KEY: ${{ secrets.GOOGLE_TTS_API_KEY }}
+          VBEE_APP_ID: ${{ secrets.VBEE_APP_ID }}
+          VBEE_TOKEN: ${{ secrets.VBEE_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+        run: python main.py --max 1
+
+      - name: Save processed.json back to repo
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/processed.json data/skipped.json 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "chore: update processed urls [skip ci]"
+          git push || true

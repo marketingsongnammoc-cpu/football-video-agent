@@ -1,0 +1,11 @@
+output/
+logs/
+config/.env
+__pycache__/
+*.pyc
+*.pyo
+.env
+*.mp4
+*.tmp
+.mcp.json
+.test_hidden
