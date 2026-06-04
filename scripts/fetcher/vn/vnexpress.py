@@ -56,24 +56,36 @@ class VnExpressAdapter(BaseAdapter):
             for p in body_paragraphs
         )
 
-        # Images — chỉ lấy hình trong BODY bài viết (không lấy og:image thumbnail)
+        # Images
         images: list[str] = []
         seen: set[str] = set()
 
-        def _add(u: str) -> None:
+        def _add(u: str, require_cdn: bool = True) -> None:
             u = u.strip()
-            if u and u not in seen and any(cdn in u for cdn in self.config.image_cdn_whitelist):
-                seen.add(u)
-                images.append(u)
+            if not u or u in seen:
+                return
+            if require_cdn and not any(cdn in u for cdn in self.config.image_cdn_whitelist):
+                return
+            seen.add(u)
+            images.append(u)
 
-        # 1. <meta itemprop="url" content="..."> — ảnh trong body bài viết
+        # 1. og:image — luôn có, ảnh do ban biên tập chọn
+        for pat in [
+            r'property="og:image"\s+content="([^"]+)"',
+            r'content="([^"]+)"\s+property="og:image"',
+        ]:
+            m = re.search(pat, html, re.IGNORECASE)
+            if m:
+                _add(m.group(1), require_cdn=False)
+                break
+
+        # 2. <meta itemprop="url" content="..."> — ảnh trong body bài viết
         for m in re.finditer(r'itemprop="url"\s+content="(https://[^"]+vnecdn[^"]+)"', html):
             u = m.group(1)
-            # Bỏ thumbnail nhỏ (w=680, w=460...), chỉ lấy full-size
             if 'w=0' in u or 'w=1200' in u or ('w=' not in u):
                 _add(u)
 
-        # 2. <source data-srcset="URL 1x, URL 1.5x"> — ảnh responsive trong body
+        # 3. <source data-srcset="URL 1x, URL 1.5x"> — ảnh responsive trong body
         for m in re.finditer(r'data-srcset="([^"]+)"', html):
             first_url = m.group(1).split(' ')[0].strip()
             if 'vnecdn.net' in first_url:
