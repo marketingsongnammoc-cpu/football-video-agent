@@ -1,79 +1,119 @@
 """
-scene_renderer.py — Render từng scene PNG 720×1280
+scene_renderer.py — Render frame từ template PNG + article image + dynamic text.
 
-LAYOUT: Dark Sports Editorial (theo template THỂ THAO 247)
-  - Ảnh full-bleed, color grading tối + vignette mạnh (cinematic)
-  - Branding "THỂ THAO 247" top-left, tag top-right
-  - Badge đỏ centered ở giữa khung
-  - Headline lớn centered, subtext nhỏ centered
-  - Gradient 3 tầng: top dark (logo) + fade giữa + dark panel dưới
+QUY TẮC BẮT BUỘC:
+  - KHÔNG bao giờ ghi đè vào assets/templates/
+  - Chỉ ghi file mới vào output/frames/
+  - KHÔNG thiết kế lại template, KHÔNG generate template bằng AI
+  - Template là tài sản nhận diện đã chốt
+
+FLOW mỗi scene:
+  1. Mở template → resize 941×1672 → 1080×1920
+  2. Chèn ảnh bài viết vào article_image_box (upper-right zone)
+  3. Fill tối vùng placeholder text
+  4. Vẽ category (top-right), badge (center), headline, subtitle
+  5. Xuất composite PNG → output/frames/
+
+OUTPUT: 1080×1920 (9:16, chuẩn TikTok / Shorts / Reels)
 """
 
 from __future__ import annotations
+import hashlib
 from pathlib import Path
 from dataclasses import dataclass
 from typing import Optional
-from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageEnhance
-import numpy as np
+from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageFilter
 
 # ───────────────────────────────────────────────────────────
-# Frame & Ken Burns
+# Constants
 # ───────────────────────────────────────────────────────────
-FRAME_W, FRAME_H = 720, 1280
-BG_SCALE = 1.3
-BG_W     = int(FRAME_W * BG_SCALE)   # 936
-BG_H     = int(FRAME_H * BG_SCALE)   # 1664
+CANVAS_W, CANVAS_H = 1080, 1920        # output resolution
+TEMPLATE_DIR = Path(__file__).parent.parent / "assets" / "templates"
 
-# ───────────────────────────────────────────────────────────
-# Layout — theo template
-# ───────────────────────────────────────────────────────────
-BRAND_Y      = 52      # branding row (top-left logo, top-right tag)
-BRAND_LEFT   = 36      # logo left margin
-BRAND_RIGHT  = 684     # right margin cho tag (right-aligned)
+# Vùng chèn ảnh bài viết (trong không gian 1080×1920)
+ARTICLE_BOX = {"x": 540, "y": 380, "w": 440, "h": 560}
 
-BADGE_CY     = 700     # badge center y
-HEADLINE_Y   = 760     # top của headline
-SUBTEXT_GAP  = 14      # khoảng cách headline bottom → subtext top
-TEXT_LEFT    = 48      # left margin (centered text dùng FRAME_W//2)
-TEXT_RIGHT   = 672     # right margin
-TEXT_W       = TEXT_RIGHT - TEXT_LEFT  # 624px
-
-SAFE_BOTTOM  = 1160    # không đặt text quan trọng dưới đây
-
-# ───────────────────────────────────────────────────────────
-# Colors
-# ───────────────────────────────────────────────────────────
-DARK_NAVY       = (6, 8, 18)           # #060812
-TEXT_PRIMARY    = (255, 255, 255)      # trắng
-TEXT_SECONDARY  = (180, 185, 195)      # xám lạnh
-ACCENT_RED      = (200, 16, 46)        # #C8102E
-ACCENT_GOLD     = (212, 175, 55)       # #D4AF37
-BADGE_RED_DARK  = (120, 8, 25)         # badge gradient dark end
-
-_ACCENT_MAP = {
-    "emerald": ACCENT_GOLD,
-    "cyan":    ACCENT_GOLD,
-    "amber":   ACCENT_GOLD,
-    "red":     ACCENT_RED,
-    "gold":    ACCENT_GOLD,
+# Config vị trí text theo từng template (trong 1080×1920)
+TEMPLATE_CONFIG: dict[str, dict] = {
+    "tin-nhanh": {
+        "category_x_right": 1036,  # right edge của category text
+        "category_y": 62,
+        "badge_cx": 540,           # badge center x
+        "badge_cy": 1085,          # badge center y
+        "fill_y": 1000,            # bắt đầu fill tối (che placeholder)
+        "headline_y": 1120,
+        "max_headline_lines": 2,
+        "headline_size": 88,
+    },
+    "phan-tich": {
+        "category_x_right": 1036,
+        "category_y": 62,
+        "badge_cx": 540,
+        "badge_cy": 1085,
+        "fill_y": 1000,
+        "headline_y": 1120,
+        "max_headline_lines": 2,
+        "headline_size": 88,
+    },
+    "chuyen-nhuong": {
+        "category_x_right": 1036,
+        "category_y": 62,
+        "badge_cx": 540,
+        "badge_cy": 1085,
+        "fill_y": 1000,
+        "headline_y": 1120,
+        "max_headline_lines": 2,
+        "headline_size": 80,
+    },
+    "nhan-dinh-tran-dau": {
+        "category_x_right": 1036,
+        "category_y": 62,
+        "badge_cx": 540,
+        "badge_cy": 1085,
+        "fill_y": 1000,
+        "headline_y": 1120,
+        "max_headline_lines": 2,
+        "headline_size": 80,
+    },
+    "ket-qua-tran-dau": {
+        "category_x_right": 1036,
+        "category_y": 62,
+        "badge_cx": 540,
+        "badge_cy": 1085,
+        "fill_y": 1000,
+        "headline_y": 1120,
+        "max_headline_lines": 2,
+        "headline_size": 80,
+    },
+    "dang-ky-kenh": None,  # end card, không thay text
 }
 
-def _resolve_accent(s: str) -> tuple:
-    return _ACCENT_MAP.get(s, ACCENT_RED)
+# Giới hạn text theo document
+MAX_HEADLINE_1LINE = 32
+MAX_HEADLINE_2LINE = 52
+MAX_SUBTITLE_CHARS = 55
+MAX_CATEGORY_CHARS = 22
+MAX_BADGE_CHARS    = 14
+
+# Colors
+TEXT_WHITE  = (255, 255, 255, 255)
+TEXT_GRAY   = (190, 192, 200, 220)
+BADGE_RED1  = (160, 8, 18)      # badge gradient dark
+BADGE_RED2  = (210, 20, 40)     # badge gradient light
+DARK_FILL   = (5, 5, 12, 248)   # fill che text placeholder (gần đục hoàn toàn)
 
 # ───────────────────────────────────────────────────────────
 # Fonts
 # ───────────────────────────────────────────────────────────
 FONT_DIR = Path(__file__).parent.parent / "assets" / "fonts"
 
-FONT_HEADLINE_CANDIDATES = [
+FONT_BOLD_CANDIDATES = [
     Path("C:/Windows/Fonts/segoeuib.ttf"),
     Path("/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf"),
-    FONT_DIR / "Oswald-Bold.ttf",
     Path("/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"),
     Path("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"),
 ]
-FONT_UI_CANDIDATES = [
+FONT_REG_CANDIDATES = [
     Path("C:/Windows/Fonts/arialbd.ttf"),
     Path("C:/Windows/Fonts/segoeui.ttf"),
     Path("/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf"),
@@ -85,331 +125,339 @@ def _find_font(candidates):
     for p in candidates:
         if p.exists():
             return str(p)
-    raise FileNotFoundError(f"Không tìm thấy font: {candidates}")
+    raise FileNotFoundError(f"Font not found: {candidates}")
 
-FONT_HEADLINE_PATH = _find_font(FONT_HEADLINE_CANDIDATES)
-FONT_UI_PATH       = _find_font(FONT_UI_CANDIDATES)
+FONT_BOLD = _find_font(FONT_BOLD_CANDIDATES)
+FONT_REG  = _find_font(FONT_REG_CANDIDATES)
 
 # ───────────────────────────────────────────────────────────
-# Smart word-wrap
+# Template protection
 # ───────────────────────────────────────────────────────────
 
-@dataclass
-class WrappedText:
-    lines: list[str]
-    font: ImageFont.FreeTypeFont
-    truncated: bool
+def _checksum(path: Path) -> str:
+    return hashlib.md5(path.read_bytes()).hexdigest()[:8]
 
+_TEMPLATE_CHECKSUMS: dict[str, str] = {}
+
+def _load_template(name: str) -> Image.Image:
+    """
+    Mở template, kiểm tra không bị ghi đè, trả về bản copy resized 1080×1920.
+    KHÔNG BAO GIỜ trả về reference trực tiếp → caller không thể ghi lên gốc.
+    """
+    path = TEMPLATE_DIR / f"{name}.png"
+    if not path.exists():
+        raise FileNotFoundError(f"Template không tồn tại: {path}")
+
+    # Lưu checksum lần đầu
+    cs = _checksum(path)
+    if name not in _TEMPLATE_CHECKSUMS:
+        _TEMPLATE_CHECKSUMS[name] = cs
+    elif _TEMPLATE_CHECKSUMS[name] != cs:
+        raise RuntimeError(f"Template {name} đã bị thay đổi! Checksum mismatch.")
+
+    img = Image.open(path).convert("RGBA")
+    # Resize về 1080×1920 (9:16), KHÔNG crop
+    img = img.resize((CANVAS_W, CANVAS_H), Image.Resampling.LANCZOS)
+    return img   # bản copy, không phải file gốc
+
+
+# ───────────────────────────────────────────────────────────
+# Text utilities
+# ───────────────────────────────────────────────────────────
 
 def _measure(draw, text, font):
     b = draw.textbbox((0, 0), text, font=font)
     return b[2] - b[0], b[3] - b[1]
 
 
-def _wrap_words(words, font, max_w, draw):
-    lines, cur = [], ""
-    for w in words:
-        cand = f"{cur} {w}".strip()
-        if _measure(draw, cand, font)[0] <= max_w:
-            cur = cand
-        else:
-            if cur:
-                lines.append(cur)
-            cur = w
-    if cur:
-        lines.append(cur)
-    return lines
+@dataclass
+class Wrapped:
+    lines: list[str]
+    font: ImageFont.FreeTypeFont
 
 
-def smart_wrap(draw, text, max_width, max_lines, font_path,
-               start_size, min_size=24, step=4):
+def _smart_wrap(draw, text, max_w, max_lines, font_path, start_size, min_size=28, step=4):
     words = text.strip().split()
-    size = start_size
-    last_lines, last_font = [], None
-    while size >= min_size:
+    for size in range(start_size, min_size - 1, -step):
         font  = ImageFont.truetype(font_path, size)
-        lines = _wrap_words(words, font, max_width, draw)
-        last_lines, last_font = lines, font
+        lines, cur = [], ""
+        for w in words:
+            cand = f"{cur} {w}".strip()
+            if _measure(draw, cand, font)[0] <= max_w:
+                cur = cand
+            else:
+                if cur: lines.append(cur)
+                cur = w
+        if cur: lines.append(cur)
         if len(lines) <= max_lines:
-            if all(_measure(draw, l, font)[0] <= max_width for l in lines):
-                if len(lines) > 1 and len(lines[-1].split()) == 1 and size - step >= min_size:
-                    size -= step; continue
-                return WrappedText(lines, font, False)
-        size -= step
-    # truncate with "…"
-    trunc = last_lines[:max_lines]
-    if len(last_lines) > max_lines and trunc:
-        ws = trunc[-1].split()
+            return Wrapped(lines, font)
+    # fallback: truncate last line
+    font   = ImageFont.truetype(font_path, min_size)
+    lines  = lines[:max_lines]
+    if lines:
+        ws = lines[-1].split()
         while ws:
             att = " ".join(ws) + "…"
-            if _measure(draw, att, last_font)[0] <= max_width:
-                trunc[-1] = att; break
+            if _measure(draw, att, font)[0] <= max_w:
+                lines[-1] = att; break
             ws.pop()
-        else:
-            trunc[-1] = "…"
-    return WrappedText(trunc, last_font, True)
+    return Wrapped(lines, font)
 
-
-# ───────────────────────────────────────────────────────────
-# Image helpers
-# ───────────────────────────────────────────────────────────
-
-def _fit_full_bleed(img, tw, th):
-    return ImageOps.fit(img, (tw, th), method=Image.Resampling.LANCZOS, centering=(0.5, 0.5))
-
-
-def _classify_aspect(img):
-    w, h = img.size
-    a = w / h
-    return "landscape" if a > 1.3 else ("portrait" if a < 0.7 else "square")
-
-
-def _apply_color_grading(img):
-    """Tối + lạnh + vignette mạnh để ảnh có cảm giác cinematic/dark editorial."""
-    img = ImageEnhance.Contrast(img).enhance(1.25)
-    img = ImageEnhance.Brightness(img).enhance(0.88)
-    img = ImageEnhance.Color(img).enhance(0.80)
-    # Cold navy tint 10%
-    tint = Image.new("RGB", img.size, (0, 6, 24))
-    img  = Image.blend(img, tint, alpha=0.10)
-    # Vignette numpy
-    arr   = np.array(img).astype(np.float32)
-    h, w  = arr.shape[:2]
-    ys    = np.linspace(-1, 1, h)[:, None]
-    xs    = np.linspace(-1, 1, w)[None, :]
-    dist  = np.sqrt(xs**2 + ys**2) / np.sqrt(2)
-    vig   = 1.0 - np.clip(dist * 0.65, 0, 0.45)
-    arr   = np.clip(arr * vig[:, :, None], 0, 255).astype(np.uint8)
-    return Image.fromarray(arr)
-
-
-def _render_bg(img):
-    img = _apply_color_grading(img)
-    return _fit_full_bleed(img, BG_W, BG_H)
-
-
-# ───────────────────────────────────────────────────────────
-# Gradient overlay (3 tầng theo template)
-# ───────────────────────────────────────────────────────────
-
-def _draw_gradient(canvas):
-    """
-    3-tầng gradient:
-      Top  (0-160):   alpha 180→0   — nền tối cho logo
-      Mid  (160-620): alpha 0→30    — rất nhẹ, ảnh thoáng
-      Low  (620-900): alpha 30→160  — fade vào dark panel
-      Base (900+):    alpha 160→220 — dark panel cho text
-    """
-    w, h   = canvas.size
-    arr    = np.array(canvas).astype(np.float32)
-    dn     = np.array(DARK_NAVY, dtype=np.float32)
-
-    def blend_row(y, alpha):
-        a = alpha / 255.0
-        arr[y, :, :3] = arr[y, :, :3] * (1 - a) + dn * a
-        arr[y, :, 3]  = alpha
-
-    for y in range(0, 160):           # top dark (logo)
-        t = 1 - y / 160
-        blend_row(y, 180 * t)
-    arr[:160, :, 3] = np.clip(arr[:160, :, 3], 0, 180)
-
-    for y in range(160, 620):         # mid: nearly transparent
-        t = (y - 160) / 460
-        blend_row(y, 30 * t)
-
-    for y in range(620, 900):         # low: fade to dark
-        t = (y - 620) / 280
-        e = t * t * (3 - 2 * t)      # smoothstep
-        blend_row(y, 30 + e * 130)
-
-    for y in range(900, h):           # base: dark panel
-        t = (y - 900) / max(h - 900, 1)
-        blend_row(y, 160 + t * 60)
-
-    # Top area truly transparent (image shows through)
-    arr[160:620, :, 3] = np.clip(arr[160:620, :, 3], 0, 30)
-
-    canvas.paste(Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8)), (0, 0))
-
-
-# ───────────────────────────────────────────────────────────
-# UI elements
-# ───────────────────────────────────────────────────────────
 
 def _strip_emoji(text):
     import re
     return re.sub(r"[^\w\sÀ-ɏḀ-ỿ]", "", text).strip()
 
+# ───────────────────────────────────────────────────────────
+# Article image overlay
+# ───────────────────────────────────────────────────────────
 
-def _draw_branding(canvas, tag_text: str) -> None:
-    """Logo THỂ THAO 247 top-left, tag top-right."""
+def _place_article_image(canvas: Image.Image, image_path: Path) -> None:
+    """
+    Chèn ảnh bài viết vào ARTICLE_BOX trên canvas.
+    Không được che logo, badge, headline (nằm dưới fill_y).
+    """
+    box = ARTICLE_BOX
+    try:
+        article = Image.open(image_path).convert("RGBA")
+    except Exception:
+        return
+
+    # Crop ảnh về tỉ lệ box
+    target_ratio = box["w"] / box["h"]
+    img_ratio    = article.width / article.height
+    if img_ratio > target_ratio:
+        new_w = int(article.height * target_ratio)
+        left  = (article.width - new_w) // 2
+        article = article.crop((left, 0, left + new_w, article.height))
+    else:
+        new_h = int(article.width / target_ratio)
+        top   = (article.height - new_h) // 2
+        article = article.crop((0, top, article.width, top + new_h))
+
+    article = article.resize((box["w"], box["h"]), Image.Resampling.LANCZOS)
+
+    # Bo góc 24px
+    radius = 24
+    mask   = Image.new("L", (box["w"], box["h"]), 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, box["w"], box["h"]), radius=radius, fill=255)
+
+    # Overlay tối nhẹ 30% lên ảnh để hòa với template
+    dark = Image.new("RGBA", (box["w"], box["h"]), (0, 0, 0, 80))
+    article = Image.alpha_composite(article, dark)
+
+    # Dán lên canvas
+    canvas.paste(article, (box["x"], box["y"]), mask)
+
+    # Viền đỏ mảnh 2px
+    draw = ImageDraw.Draw(canvas)
+    draw.rounded_rectangle(
+        (box["x"], box["y"], box["x"] + box["w"], box["y"] + box["h"]),
+        radius=radius,
+        outline=(180, 15, 22, 210),
+        width=2,
+    )
+
+
+# ───────────────────────────────────────────────────────────
+# Text layer: category, badge, headline, subtitle
+# ───────────────────────────────────────────────────────────
+
+def _draw_category(canvas, cfg, tag_text):
+    """Category label top-right: 'TIN NHANH //'. Fill tối vùng này trước để che text cũ."""
+    import re
+    clean = re.sub(r"[^\w\sÀ-ɏḀ-ỿ]", "", tag_text).strip().upper()
+    clean = clean[:MAX_CATEGORY_CHARS]
+    label = f"{clean}  //"
+
+    draw = ImageDraw.Draw(canvas)
+    font = ImageFont.truetype(FONT_REG, 30)
+    tw, th = _measure(draw, label, font)
+    x = cfg["category_x_right"] - tw
+    y = cfg["category_y"] - th // 2
+
+    # Fill dark rect toàn bộ vùng top-right để che "CHUYÊN MỤC //" + đường kẻ template
+    ImageDraw.Draw(canvas).rectangle(
+        [400, 26, CANVAS_W, 150],
+        fill=(5, 5, 12, 255),
+    )
+
+    draw.text((x + 1, y + 1), label, font=font, fill=(0, 0, 0, 160))
+    draw.text((x, y), label, font=font, fill=(210, 210, 220, 220))
+
+
+def _draw_badge(canvas, cfg, tag_text):
+    """Badge đỏ gradient centered, phía trên headline."""
+    import re
+    clean = re.sub(r"[^\w\sÀ-ɏḀ-ỿ]", "", tag_text).strip().upper()
+    clean = clean[:MAX_BADGE_CHARS]
+
     draw  = ImageDraw.Draw(canvas)
-    flogo = ImageFont.truetype(FONT_HEADLINE_PATH, 20)
-    ftag  = ImageFont.truetype(FONT_UI_PATH, 17)
-
-    # Dấu chấm accent (logo icon)
-    dot_r = 7
-    dot_x, dot_y = BRAND_LEFT, BRAND_Y - dot_r
-    draw.ellipse((dot_x, dot_y, dot_x + dot_r * 2, dot_y + dot_r * 2),
-                 fill=ACCENT_RED + (240,))
-
-    # Logo text
-    logo_x = BRAND_LEFT + dot_r * 2 + 8
-    lw, lh = _measure(draw, "THỂ THAO 247", flogo)
-    draw.text((logo_x, BRAND_Y - lh // 2 - 1), "THỂ THAO 247",
-              font=flogo, fill=TEXT_PRIMARY + (240,))
-
-    # Thin line dưới logo
-    line_y = BRAND_Y + lh // 2 + 6
-    draw.rectangle([BRAND_LEFT, line_y, BRAND_LEFT + lw + dot_r * 2 + 8, line_y + 1],
-                   fill=ACCENT_RED + (120,))
-
-    # Tag top-right: "BREAKING //"
-    tag_clean = _strip_emoji(tag_text).upper()
-    tag_str   = f"{tag_clean}  //"
-    tw, th    = _measure(draw, tag_str, ftag)
-    tag_x     = FRAME_W - tw - (FRAME_W - BRAND_RIGHT)
-    draw.text((tag_x, BRAND_Y - th // 2), tag_str,
-              font=ftag, fill=TEXT_SECONDARY + (200,))
-
-
-def _draw_badge(canvas, tag_text: str, accent: tuple) -> None:
-    """Badge centered, nền gradient đỏ, text CATEGORY."""
-    draw  = ImageDraw.Draw(canvas)
-    fbadge = ImageFont.truetype(FONT_UI_PATH, 24)
-    label  = _strip_emoji(tag_text).upper()
-
-    tw, th = _measure(draw, label, fbadge)
-    pad_x, pad_y = 28, 14
+    font  = ImageFont.truetype(FONT_REG, 28)
+    tw, th = _measure(draw, clean, font)
+    pad_x, pad_y = 36, 16
     bw = tw + pad_x * 2
     bh = th + pad_y * 2
-    bx = (FRAME_W - bw) // 2
-    by = BADGE_CY - bh // 2
+    bx = cfg["badge_cx"] - bw // 2
+    by = cfg["badge_cy"] - bh // 2
 
-    # Badge background: gradient horizontal (accent_dark → accent)
-    badge_img  = Image.new("RGBA", (bw, bh), (0, 0, 0, 0))
-    badge_draw = ImageDraw.Draw(badge_img)
-
-    # Gradient: left dark → right accent color
-    r1, g1, b1 = BADGE_RED_DARK
-    r2, g2, b2 = accent
-    for x in range(bw):
-        t = x / max(bw - 1, 1)
-        r = int(r1 + (r2 - r1) * t)
-        g = int(g1 + (g2 - g1) * t)
-        b = int(b1 + (b2 - b1) * t)
-        badge_draw.rectangle([x, 0, x, bh], fill=(r, g, b, 220))
+    # Gradient đỏ horizontal
+    badge = Image.new("RGBA", (bw, bh), (0, 0, 0, 0))
+    for ix in range(bw):
+        t   = ix / max(bw - 1, 1)
+        r   = int(BADGE_RED1[0] + (BADGE_RED2[0] - BADGE_RED1[0]) * t)
+        g   = int(BADGE_RED1[1] + (BADGE_RED2[1] - BADGE_RED1[1]) * t)
+        b   = int(BADGE_RED1[2] + (BADGE_RED2[2] - BADGE_RED1[2]) * t)
+        ImageDraw.Draw(badge).rectangle([ix, 0, ix, bh], fill=(r, g, b, 225))
 
     # Rounded mask
     mask = Image.new("L", (bw, bh), 0)
     ImageDraw.Draw(mask).rounded_rectangle((0, 0, bw, bh), radius=bh // 2, fill=255)
-    badge_img.putalpha(mask)
-    canvas.alpha_composite(badge_img, (bx, by))
+    badge.putalpha(mask)
+    canvas.alpha_composite(badge, (bx, by))
 
-    # Border ăn với rounded
-    border_layer = Image.new("RGBA", (bw, bh), (0, 0, 0, 0))
-    bd = ImageDraw.Draw(border_layer)
-    bd.rounded_rectangle((0, 0, bw - 1, bh - 1), radius=bh // 2,
-                          outline=(255, 255, 255, 60), width=1)
-    canvas.alpha_composite(border_layer, (bx, by))
+    # Border trắng mỏng
+    bd = ImageDraw.Draw(canvas)
+    bd.rounded_rectangle((bx, by, bx + bw - 1, by + bh - 1),
+                          radius=bh // 2, outline=(255, 255, 255, 50), width=1)
 
-    # Text centered in badge
-    draw = ImageDraw.Draw(canvas)
+    # Text
     tx = bx + (bw - tw) // 2
     ty = by + (bh - th) // 2 - 1
-    draw.text((tx, ty), label, font=fbadge, fill=TEXT_PRIMARY + (255,))
+    draw.text((tx, ty), clean, font=font, fill=TEXT_WHITE)
 
 
-def _draw_centered_text(canvas, text, font_path, start_size, max_lines,
-                        top_y, fill, max_width=None):
-    """Vẽ text centered theo chiều ngang. Trả về y cuối cùng."""
-    max_width = max_width or TEXT_W
+def _apply_text_fill(canvas: Image.Image, cfg: dict) -> None:
+    """Fill fully-opaque dark rect từ fill_y xuống đáy để che toàn bộ placeholder text."""
+    ImageDraw.Draw(canvas).rectangle(
+        [0, cfg["fill_y"], CANVAS_W, CANVAS_H],
+        fill=(5, 5, 12, 255),
+    )
+
+
+def _draw_headline_subtitle(canvas, cfg, headline, subtitle):
+    """Vẽ headline + subtitle centered (gọi SAU _apply_text_fill và _draw_badge)."""
     draw = ImageDraw.Draw(canvas)
-    wrapped = smart_wrap(draw, text, max_width=max_width, max_lines=max_lines,
-                         font_path=font_path, start_size=start_size)
-    lh  = int(wrapped.font.size * 1.10)
-    cur_y = top_y
-    for line in wrapped.lines:
-        lw, _ = _measure(draw, line, wrapped.font)
-        x     = (FRAME_W - lw) // 2
-        draw.text((x, cur_y), line, font=wrapped.font, fill=fill)
-        cur_y += lh
-    return cur_y
+
+    pad_x   = 56   # left/right margin
+    max_w   = CANVAS_W - pad_x * 2
+
+    # Headline
+    wrapped_h = _smart_wrap(draw, headline, max_w, cfg["max_headline_lines"],
+                             FONT_BOLD, cfg["headline_size"])
+    lh_h  = int(wrapped_h.font.size * 1.10)
+    cur_y = cfg["headline_y"]
+    for line in wrapped_h.lines:
+        tw, _ = _measure(draw, line, wrapped_h.font)
+        x     = (CANVAS_W - tw) // 2
+        # Shadow
+        draw.text((x + 2, cur_y + 2), line, font=wrapped_h.font, fill=(0, 0, 0, 180))
+        draw.text((x, cur_y), line, font=wrapped_h.font, fill=TEXT_WHITE)
+        cur_y += lh_h
+
+    # Subtitle
+    sub_y   = cur_y + 18
+    sub     = subtitle[:MAX_SUBTITLE_CHARS]
+    wrapped_s = _smart_wrap(draw, sub, max_w - 40, 2, FONT_REG, 32, min_size=26)
+    lh_s  = int(wrapped_s.font.size * 1.15)
+    for line in wrapped_s.lines:
+        tw, _ = _measure(draw, line, wrapped_s.font)
+        x     = (CANVAS_W - tw) // 2
+        draw.text((x, sub_y), line, font=wrapped_s.font, fill=TEXT_GRAY)
+        sub_y += lh_s
 
 
 # ───────────────────────────────────────────────────────────
-# Public render functions
+# Template selection
 # ───────────────────────────────────────────────────────────
 
-def render_scene(scene, image_path, bg_output, overlay_output,
-                 scene_index=0, total_scenes=4):
-    img = Image.open(image_path).convert("RGB")
-    aspect_class = _classify_aspect(img)
+_TAG_TO_TEMPLATE = {
+    "CHUYỂN NHƯỢNG": "chuyen-nhuong",
+    "TRẬN ĐẤU":      "nhan-dinh-tran-dau",
+    "KẾT QUẢ":       "ket-qua-tran-dau",
+    "CHIẾN THUẬT":   "phan-tich",
+    "NGÔI SAO":      "tin-nhanh",
+    "GIẢI ĐẤU":      "tin-nhanh",
+    "BREAKING":      "tin-nhanh",
+    "BÓNG ĐÁ VN":   "tin-nhanh",
+}
 
-    # BG: color-graded + center-crop cho Ken Burns
-    bg = _render_bg(img)
-    bg_output.parent.mkdir(parents=True, exist_ok=True)
-    bg.save(bg_output, "JPEG", quality=92)
+def select_template(tag: str) -> str:
+    """Chọn template phù hợp theo tag của scene."""
+    import re
+    clean = re.sub(r"[^\w\sÀ-ɏḀ-ỿ]", "", tag).strip().upper()
+    for key, tmpl in _TAG_TO_TEMPLATE.items():
+        if key in clean:
+            return tmpl
+    return "tin-nhanh"  # default
 
-    # Overlay: transparent RGBA
-    canvas = Image.new("RGBA", (FRAME_W, FRAME_H), (0, 0, 0, 0))
-    _draw_gradient(canvas)
 
-    accent = _resolve_accent(scene.get("accent", "red"))
-    tag    = scene.get("tag", "⚡ BREAKING")
+# ───────────────────────────────────────────────────────────
+# Public API (giữ nguyên interface cũ cho main.py)
+# ───────────────────────────────────────────────────────────
 
-    _draw_branding(canvas, tag)
-    _draw_badge(canvas, tag, accent)
+def render_scene(scene: dict, image_path: Path, bg_output: Path,
+                 overlay_output: Path, scene_index: int = 0,
+                 total_scenes: int = 4) -> dict:
+    """
+    Render 1 scene theo template.
 
-    # Headline — centered, lớn
-    headline_bottom = _draw_centered_text(
-        canvas, scene["headline"],
-        font_path=FONT_HEADLINE_PATH,
-        start_size=72, max_lines=2,
-        top_y=HEADLINE_Y,
-        fill=TEXT_PRIMARY + (255,),
-    )
+    bg_output   : không dùng (ảnh tĩnh, không cần Ken Burns bg)
+    overlay_output: file frame composite cuối cùng (1080×1920)
+    """
+    tag      = scene.get("tag", "⚡ BREAKING")
+    tmpl_name = select_template(tag)
+    cfg      = TEMPLATE_CONFIG.get(tmpl_name) or TEMPLATE_CONFIG["tin-nhanh"]
 
-    # Subtext — centered, nhỏ hơn
-    subtext_y = headline_bottom + SUBTEXT_GAP
-    _draw_centered_text(
-        canvas, scene["subtext"],
-        font_path=FONT_UI_PATH,
-        start_size=28, max_lines=2,
-        top_y=subtext_y,
-        fill=TEXT_SECONDARY + (220,),
-    )
+    # 1. Load template (bản copy, không ghi đè gốc)
+    canvas = _load_template(tmpl_name)
 
+    # 2. Chèn ảnh bài viết
+    if image_path and image_path.exists():
+        _place_article_image(canvas, image_path)
+
+    # 3. Thứ tự bắt buộc: fill tối → badge (nằm trên fill) → headline/subtitle
+    _draw_category(canvas, cfg, tag)      # top-right, không bị fill che
+    _apply_text_fill(canvas, cfg)         # fill tối từ fill_y xuống đáy
+    _draw_badge(canvas, cfg, tag)         # badge vẽ SAU fill (không bị che)
+    _draw_headline_subtitle(canvas, cfg, scene["headline"], scene["subtext"])
+
+    # 4. Xuất ra output/frames/ (KHÔNG ghi vào assets/templates/)
     overlay_output.parent.mkdir(parents=True, exist_ok=True)
-    canvas.save(overlay_output, "PNG", optimize=True)
+    canvas.convert("RGB").save(overlay_output, "PNG", optimize=True)
 
+    # bg_output không cần cho approach này, tạo symlink/copy nhỏ
+    bg_output.parent.mkdir(parents=True, exist_ok=True)
+    if not bg_output.exists():
+        canvas.convert("RGB").save(bg_output, "JPEG", quality=85)
+
+    img_orig = Image.open(image_path) if image_path and image_path.exists() else None
+    aspect   = (img_orig.size[0] / img_orig.size[1]) if img_orig else 1.0
     return {
-        "aspect_class": aspect_class,
-        "aspect": img.size[0] / img.size[1],
-        "image_size": img.size,
-        "bg_size": bg.size,
+        "aspect_class": "landscape" if aspect > 1.3 else "portrait",
+        "aspect": aspect,
+        "image_size": img_orig.size if img_orig else (0, 0),
+        "bg_size": (CANVAS_W, CANVAS_H),
+        "template": tmpl_name,
     }
 
 
-def render_all_scenes(scenes, images_dir, frames_dir):
+def render_all_scenes(scenes: list[dict], images_dir: Path, frames_dir: Path) -> list[dict]:
     results = []
     for idx, scene in enumerate(scenes):
-        scene_id = scene.get("id", f"{idx+1:02d}")
+        scene_id   = scene.get("id", f"{idx+1:02d}")
         image_path = None
         for ext in [".jpg", ".jpeg", ".png", ".webp"]:
             cand = images_dir / f"scene_{scene_id}{ext}"
             if cand.exists():
                 image_path = cand; break
-        if image_path is None:
-            raise FileNotFoundError(f"Không tìm thấy ảnh scene {scene_id}")
 
-        bg_out  = frames_dir / f"bg_{scene_id}.jpg"
-        ov_out  = frames_dir / f"overlay_{scene_id}.png"
-        meta    = render_scene(scene, image_path, bg_out, ov_out,
+        bg_out = frames_dir / f"bg_{scene_id}.jpg"
+        ov_out = frames_dir / f"overlay_{scene_id}.png"
+        meta   = render_scene(scene, image_path, bg_out, ov_out,
                                scene_index=idx, total_scenes=len(scenes))
         meta["scene_id"] = scene_id
         results.append(meta)
-        print(f"  ✓ scene {scene_id} → bg {meta['bg_size']} + overlay {FRAME_W}×{FRAME_H}"
-              f" (aspect {meta['aspect']:.2f} / {meta['aspect_class']})")
+        print(f"  ✓ scene {scene_id} → {CANVAS_W}×{CANVAS_H}"
+              f" template={meta['template']} (aspect {meta['aspect']:.2f})")
     return results
