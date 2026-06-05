@@ -1,15 +1,17 @@
 """
 composer.py — Ghép video MP4 từ bg + overlay + audio mỗi scene.
 
-KEN BURNS MOTION dùng scale+crop (float expressions) thay vì zoompan:
-- zoompan dùng integer pixel positions → giật 1px/frame
-- scale+crop dùng floating-point → subpixel smooth, không giật
+KEN BURNS: dùng PIL affine transform per-frame (subpixel chính xác).
 
-Motions:
-- zoom_in   : 1.0x → 1.12x (center)
-- zoom_out  : 1.12x → 1.0x (center)
-- pan_left  : pan phải→trái (zoom cố định 1.08x)
-- pan_right : pan trái→phải (zoom cố định 1.08x)
+Tại sao không dùng ffmpeg zoompan/scale+crop:
+  - ffmpeg buộc phải làm tròn tọa độ về integer → nhảy ±1px/frame → giật
+  - PIL Image.transform(AFFINE) xử lý float coordinates + BICUBIC interpolation
+    → subpixel smooth, không có artifact
+
+Pipeline mỗi scene:
+  1. PIL: render từng frame (bg affine + overlay composite) → JPEG sequence
+  2. ffmpeg: encode JPEG sequence + audio → scene.mp4
+  3. ffmpeg concat: ghép tất cả scenes → video.mp4
 """
 
 from __future__ import annotations
@@ -21,10 +23,13 @@ import subprocess
 import tempfile
 from typing import Literal
 
+from PIL import Image
 
 FRAME_W, FRAME_H = 720, 1280
 FPS = 30
-SILENCE_AFTER = 0.5  # giây im lặng sau mỗi scene
+SILENCE_AFTER = 0.5       # giây im lặng sau mỗi scene
+ZOOM_RANGE    = 0.10      # zoom 10% (ít hơn cũ 12%, smoother)
+PAN_OFFSET    = 65        # pixels pan left/right trong source space
 
 MotionKind = Literal["zoom_in", "zoom_out", "pan_left", "pan_right"]
 ALL_MOTIONS: list[MotionKind] = ["zoom_in", "zoom_out", "pan_left", "pan_right"]
@@ -35,10 +40,8 @@ ALL_MOTIONS: list[MotionKind] = ["zoom_in", "zoom_out", "pan_left", "pan_right"]
 # ───────────────────────────────────────────────────────────
 
 def _get_audio_duration(audio_path: Path) -> float:
-    """ffprobe để lấy duration audio."""
     result = subprocess.run(
-        ["ffprobe", "-v", "quiet", "-print_format", "json",
-         "-show_streams", str(audio_path)],
+        ["ffprobe", "-v", "quiet", "-print_format", "json", "-show_streams", str(audio_path)],
         capture_output=True, text=True, check=True,
     )
     for stream in json.loads(result.stdout).get("streams", []):
@@ -47,101 +50,122 @@ def _get_audio_duration(audio_path: Path) -> float:
     raise ValueError(f"Không lấy được duration: {audio_path}")
 
 
-def _ken_burns_filter(motion: MotionKind, total_dur: float) -> str:
+def _smoothstep(t: float) -> float:
+    """Smoothstep easing: 0→1, không giật đầu/cuối."""
+    t = max(0.0, min(1.0, t))
+    return t * t * (3 - 2 * t)
+
+
+def _compute_affine(motion: MotionKind, e: float, bg_w: int, bg_h: int) -> tuple:
     """
-    Smooth Ken Burns dùng scale+crop với float expressions (t = timestamp giây).
+    Tính affine matrix cho PIL.Image.transform.
 
-    Tại sao không dùng zoompan:
-    - zoompan làm tròn x,y về integer → nhảy 1px/frame → rung/giật rõ
-    - scale+crop: scale dùng float, crop auto-center → subpixel smooth
+    PIL AFFINE: output(x,y) ← input(a*x + b*y + c, d*x + e_*y + f)
+    Với zoom + pan thuần (không xoay): b=0, d=0
+      → input_x = (1/zoom)*out_x + offset_x
+      → input_y = (1/zoom)*out_y + offset_y
 
-    Input bg: BG_W×BG_H (936×1664)
-    Output: FRAME_W×FRAME_H (720×1280)
+    offset_x/y là tọa độ góc trên-trái của vùng crop trong source.
     """
-    OUT_W, OUT_H = FRAME_W, FRAME_H
-    D = max(total_dur, 0.1)
-
-    # Smoothstep easing dùng t (float timestamp 0→D)
-    p = f"(t/{D:.6f})"
-    e = f"({p}*{p}*(3-2*{p}))"   # 0→1 smooth
-
     if motion == "zoom_in":
-        # Scale bg lên 1.0x→1.12x, crop center cố định 720×1280
-        z = f"(1+0.12*{e})"
-        return (
-            f"scale=w='iw*{z}':h='ih*{z}':eval=frame:flags=lanczos,"
-            f"crop={OUT_W}:{OUT_H}"
-        )
-
+        zoom = 1.0 + ZOOM_RANGE * e
     elif motion == "zoom_out":
-        z = f"(1.12-0.12*{e})"
-        return (
-            f"scale=w='iw*{z}':h='ih*{z}':eval=frame:flags=lanczos,"
-            f"crop={OUT_W}:{OUT_H}"
-        )
+        zoom = (1.0 + ZOOM_RANGE) - ZOOM_RANGE * e
+    else:  # pan
+        zoom = 1.0 + ZOOM_RANGE * 0.8   # fixed ~1.08x
 
-    elif motion == "pan_left":
-        # Fixed 1.08x zoom, x đi từ phải (+70) sang trái (-70)
-        return (
-            f"scale=w='iw*1.08':h='ih*1.08':flags=lanczos,"
-            f"crop={OUT_W}:{OUT_H}:"
-            f"x='(iw-{OUT_W})/2+70*(1-2*{e})':y='(ih-{OUT_H})/2'"
-        )
+    inv_z = 1.0 / zoom
 
+    # Vùng cần crop trong source (float)
+    crop_w = FRAME_W * inv_z
+    crop_h = FRAME_H * inv_z
+
+    # Offset pan ngang
+    if motion == "pan_left":
+        pan_x = PAN_OFFSET * (1 - 2 * e)    # +offset → -offset
     elif motion == "pan_right":
-        return (
-            f"scale=w='iw*1.08':h='ih*1.08':flags=lanczos,"
-            f"crop={OUT_W}:{OUT_H}:"
-            f"x='(iw-{OUT_W})/2+70*(2*{e}-1)':y='(ih-{OUT_H})/2'"
-        )
-
+        pan_x = PAN_OFFSET * (2 * e - 1)    # -offset → +offset
     else:
-        raise ValueError(f"Unknown motion: {motion}")
+        pan_x = 0.0
+
+    offset_x = (bg_w - crop_w) / 2.0 + pan_x
+    offset_y = (bg_h - crop_h) / 2.0
+
+    # Clamp để không vượt ra ngoài ảnh gốc
+    offset_x = max(0.0, min(offset_x, bg_w - crop_w))
+    offset_y = max(0.0, min(offset_y, bg_h - crop_h))
+
+    # PIL affine tuple: (a, b, c, d, e_, f) — single-channel per axis
+    return (inv_z, 0.0, offset_x, 0.0, inv_z, offset_y)
 
 
 # ───────────────────────────────────────────────────────────
-# Per-scene render
+# Per-scene render: PIL frames → ffmpeg encode
 # ───────────────────────────────────────────────────────────
 
 def _render_scene(bg_path: Path, overlay_path: Path, audio_path: Path,
                   output_path: Path, motion: MotionKind) -> float:
     """
-    Render 1 scene thành MP4 bằng ffmpeg.
+    Render 1 scene:
+      1. PIL affine per-frame → JPEG sequence (subpixel smooth)
+      2. ffmpeg encode sequence + audio → MP4
     Trả về total duration (giây).
     """
-    audio_dur = _get_audio_duration(audio_path)
-    total_dur = audio_dur + SILENCE_AFTER
+    audio_dur  = _get_audio_duration(audio_path)
+    total_dur  = audio_dur + SILENCE_AFTER
+    n_frames   = int(total_dur * FPS)
 
-    kb = _ken_burns_filter(motion, total_dur)
+    bg      = Image.open(bg_path).convert("RGB")
+    overlay = Image.open(overlay_path).convert("RGBA")
+    bg_w, bg_h = bg.size
 
-    # filter_complex:
-    # [0] bg jpg (936×1664) → scale+crop smooth 720×1280
-    # [1] overlay PNG (RGBA 720×1280) → composite
-    # [2] audio → apad im lặng đến total_dur
-    filter_complex = (
-        f"[0:v]{kb}[kbg];"
-        f"[1:v]format=rgba[ov];"
-        f"[kbg][ov]overlay=0:0[v];"
-        f"[2:a]apad=whole_dur={total_dur}[a]"
-    )
+    tmp_dir = output_path.parent / f"_frames_{output_path.stem}"
+    tmp_dir.mkdir(exist_ok=True)
 
-    cmd = [
-        "ffmpeg", "-y",
-        "-loop", "1", "-framerate", str(FPS), "-i", str(bg_path),
-        "-i", str(overlay_path),
-        "-i", str(audio_path),
-        "-filter_complex", filter_complex,
-        "-map", "[v]",
-        "-map", "[a]",
-        "-t", str(total_dur),
-        "-c:v", "libx264", "-preset", "fast", "-crf", "18",
-        "-pix_fmt", "yuv420p",
-        "-c:a", "aac", "-ar", "44100",
-        str(output_path),
-    ]
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    if result.returncode != 0:
-        raise RuntimeError(f"ffmpeg scene error:\n{result.stderr[-2000:]}")
+    try:
+        # ── Render frames ──
+        for n in range(n_frames):
+            t = n / max(n_frames - 1, 1)          # 0.0 → 1.0
+            e = _smoothstep(t)
+            affine = _compute_affine(motion, e, bg_w, bg_h)
+
+            # Subpixel-accurate crop + zoom qua PIL affine
+            frame = bg.transform(
+                (FRAME_W, FRAME_H),
+                Image.Transform.AFFINE,
+                affine,
+                resample=Image.Resampling.BICUBIC,
+            )
+
+            # Composite overlay (text, gradient, tag pill...)
+            frame_rgba = frame.convert("RGBA")
+            frame_rgba.alpha_composite(overlay)
+
+            frame_rgba.convert("RGB").save(
+                tmp_dir / f"f{n:05d}.jpg", "JPEG", quality=94,
+            )
+
+        # ── ffmpeg encode: JPEG sequence + audio → MP4 ──
+        cmd = [
+            "ffmpeg", "-y",
+            "-framerate", str(FPS),
+            "-i", str(tmp_dir / "f%05d.jpg"),
+            "-i", str(audio_path),
+            "-map", "0:v", "-map", "1:a",
+            "-t", f"{total_dur:.4f}",
+            "-c:v", "libx264", "-preset", "fast", "-crf", "18",
+            "-pix_fmt", "yuv420p",
+            "-c:a", "aac", "-ar", "44100",
+            "-shortest",
+            str(output_path),
+        ]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError(f"ffmpeg encode error:\n{result.stderr[-2000:]}")
+
+    finally:
+        shutil.rmtree(tmp_dir, ignore_errors=True)
+
     return total_dur
 
 
@@ -176,17 +200,6 @@ def _concat_scenes(scene_files: list[Path], output_path: Path) -> None:
 
 def compose_video(scenes: list[dict], video_folder: Path, output_path: Path,
                   seed: int | None = None) -> dict:
-    """
-    Ghép video MP4 từ folder dự án.
-
-    Args:
-        scenes: list scene dict (mỗi scene có id "01", "02", ...)
-        video_folder: folder chứa frames/ và audio/
-        output_path: đường dẫn file mp4 đầu ra
-        seed: random seed cho motion (None = random thật)
-
-    Returns: {duration, scenes_meta, output}
-    """
     if seed is not None:
         random.seed(seed)
 
@@ -212,7 +225,7 @@ def compose_video(scenes: list[dict], video_folder: Path, output_path: Path,
     total_duration = 0.0
 
     for idx, scene in enumerate(scenes):
-        scene_id = scene.get("id", f"{idx+1:02d}")
+        scene_id     = scene.get("id", f"{idx+1:02d}")
         bg_path      = frames_dir / f"bg_{scene_id}.jpg"
         overlay_path = frames_dir / f"overlay_{scene_id}.png"
         audio_path   = audio_dir  / f"scene_{scene_id}.mp3"
@@ -242,7 +255,3 @@ def compose_video(scenes: list[dict], video_folder: Path, output_path: Path,
         "scenes_meta": scenes_meta,
         "output": str(output_path),
     }
-
-
-if __name__ == "__main__":
-    print("composer.py — module để compose video. Dùng test_composer.py để test.")
