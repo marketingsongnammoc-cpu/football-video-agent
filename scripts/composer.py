@@ -22,7 +22,6 @@ from typing import Literal
 
 
 FRAME_W, FRAME_H = 720, 1280
-PHOTO_ZONE_H = 800  # photo zone height — khớp với PANEL_TOP trong scene_renderer
 FPS = 30
 SILENCE_AFTER = 0.5  # giây im lặng sau mỗi scene
 
@@ -55,7 +54,7 @@ def _zoompan_expr(motion: MotionKind, total_frames: int) -> str:
     Dùng smoothstep easing (p²·(3-2p)) để motion mượt — không giật đầu/cuối.
     """
     N = max(total_frames, 1)
-    OUT_W, OUT_H = 720, 800
+    OUT_W, OUT_H = 720, 1280   # full frame — không cần pad
 
     # Smoothstep easing: p = on/N, eased = p²(3-2p)
     p   = f"(on/{N})"
@@ -104,12 +103,11 @@ def _render_scene(bg_path: Path, overlay_path: Path, audio_path: Path,
     zoompan = _zoompan_expr(motion, total_frames)
 
     # filter_complex:
-    # [0] bg jpg → zoompan (720×738) → pad thành 720×1280 (đen phía dưới)
-    # [1] overlay PNG (RGBA) → composite lên toàn frame
+    # [0] bg jpg (936×1664) → zoompan full frame (720×1280) — không cần pad
+    # [1] overlay PNG (RGBA 720×1280) → composite lên toàn frame
     # [2] audio → apad để thêm im lặng đến total_dur
     filter_complex = (
-        f"[0:v]{zoompan},"
-        f"pad={FRAME_W}:{FRAME_H}:0:0:color=black[kbg];"
+        f"[0:v]{zoompan}[kbg];"
         f"[1:v]format=rgba[ov];"
         f"[kbg][ov]overlay=0:0[v];"
         f"[2:a]apad=whole_dur={total_dur}[a]"
