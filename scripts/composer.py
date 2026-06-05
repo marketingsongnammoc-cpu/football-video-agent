@@ -1,14 +1,15 @@
 """
 composer.py — Ghép video MP4 từ bg + overlay + audio mỗi scene.
 
-Dùng ffmpeg subprocess trực tiếp (zoompan filter) thay vì MoviePy per-frame Python,
-nhanh hơn 10-20x so với phương pháp cũ.
+KEN BURNS MOTION dùng scale+crop (float expressions) thay vì zoompan:
+- zoompan dùng integer pixel positions → giật 1px/frame
+- scale+crop dùng floating-point → subpixel smooth, không giật
 
-KEN BURNS MOTION (ngẫu nhiên mỗi scene):
-- zoom_in   : 1.0x → 1.15x
-- zoom_out  : 1.15x → 1.0x
-- pan_left  : pan từ phải sang trái (zoom cố định 1.1x)
-- pan_right : pan từ trái sang phải (zoom cố định 1.1x)
+Motions:
+- zoom_in   : 1.0x → 1.12x (center)
+- zoom_out  : 1.12x → 1.0x (center)
+- pan_left  : pan phải→trái (zoom cố định 1.08x)
+- pan_right : pan trái→phải (zoom cố định 1.08x)
 """
 
 from __future__ import annotations
@@ -46,44 +47,56 @@ def _get_audio_duration(audio_path: Path) -> float:
     raise ValueError(f"Không lấy được duration: {audio_path}")
 
 
-def _zoompan_expr(motion: MotionKind, total_frames: int) -> str:
+def _ken_burns_filter(motion: MotionKind, total_dur: float) -> str:
     """
-    Sinh ffmpeg zoompan filter string.
+    Smooth Ken Burns dùng scale+crop với float expressions (t = timestamp giây).
 
-    bg image: 936×1040, output photo zone: 720×800.
-    Dùng smoothstep easing (p²·(3-2p)) để motion mượt — không giật đầu/cuối.
+    Tại sao không dùng zoompan:
+    - zoompan làm tròn x,y về integer → nhảy 1px/frame → rung/giật rõ
+    - scale+crop: scale dùng float, crop auto-center → subpixel smooth
+
+    Input bg: BG_W×BG_H (936×1664)
+    Output: FRAME_W×FRAME_H (720×1280)
     """
-    N = max(total_frames, 1)
-    OUT_W, OUT_H = 720, 1280   # full frame — không cần pad
+    OUT_W, OUT_H = FRAME_W, FRAME_H
+    D = max(total_dur, 0.1)
 
-    # Smoothstep easing: p = on/N, eased = p²(3-2p)
-    p   = f"(on/{N})"
-    e   = f"({p}*{p}*(3-2*{p}))"  # 0→1 mượt
-
-    center_x = f"(iw-({OUT_W}/zoom))/2"
-    center_y = f"(ih-({OUT_H}/zoom))/2"
+    # Smoothstep easing dùng t (float timestamp 0→D)
+    p = f"(t/{D:.6f})"
+    e = f"({p}*{p}*(3-2*{p}))"   # 0→1 smooth
 
     if motion == "zoom_in":
-        z = f"1+0.12*{e}"
-        x, y = center_x, center_y
+        # Scale bg lên 1.0x→1.12x, crop center cố định 720×1280
+        z = f"(1+0.12*{e})"
+        return (
+            f"scale=w='iw*{z}':h='ih*{z}':eval=frame:flags=lanczos,"
+            f"crop={OUT_W}:{OUT_H}"
+        )
+
     elif motion == "zoom_out":
-        z = f"1.12-0.12*{e}"
-        x, y = center_x, center_y
+        z = f"(1.12-0.12*{e})"
+        return (
+            f"scale=w='iw*{z}':h='ih*{z}':eval=frame:flags=lanczos,"
+            f"crop={OUT_W}:{OUT_H}"
+        )
+
     elif motion == "pan_left":
-        z = "1.08"
-        x = f"(iw-({OUT_W}/zoom))/2+60/zoom*(2*{e}-1)"
-        y = center_y
+        # Fixed 1.08x zoom, x đi từ phải (+70) sang trái (-70)
+        return (
+            f"scale=w='iw*1.08':h='ih*1.08':flags=lanczos,"
+            f"crop={OUT_W}:{OUT_H}:"
+            f"x='(iw-{OUT_W})/2+70*(1-2*{e})':y='(ih-{OUT_H})/2'"
+        )
+
     elif motion == "pan_right":
-        z = "1.08"
-        x = f"(iw-({OUT_W}/zoom))/2+60/zoom*(1-2*{e})"
-        y = center_y
+        return (
+            f"scale=w='iw*1.08':h='ih*1.08':flags=lanczos,"
+            f"crop={OUT_W}:{OUT_H}:"
+            f"x='(iw-{OUT_W})/2+70*(2*{e}-1)':y='(ih-{OUT_H})/2'"
+        )
+
     else:
         raise ValueError(f"Unknown motion: {motion}")
-
-    return (
-        f"zoompan=z='{z}':x='{x}':y='{y}'"
-        f":d={N}:s={OUT_W}x{OUT_H}:fps={FPS}"
-    )
 
 
 # ───────────────────────────────────────────────────────────
@@ -98,16 +111,15 @@ def _render_scene(bg_path: Path, overlay_path: Path, audio_path: Path,
     """
     audio_dur = _get_audio_duration(audio_path)
     total_dur = audio_dur + SILENCE_AFTER
-    total_frames = int(total_dur * FPS)
 
-    zoompan = _zoompan_expr(motion, total_frames)
+    kb = _ken_burns_filter(motion, total_dur)
 
     # filter_complex:
-    # [0] bg jpg (936×1664) → zoompan full frame (720×1280) — không cần pad
-    # [1] overlay PNG (RGBA 720×1280) → composite lên toàn frame
-    # [2] audio → apad để thêm im lặng đến total_dur
+    # [0] bg jpg (936×1664) → scale+crop smooth 720×1280
+    # [1] overlay PNG (RGBA 720×1280) → composite
+    # [2] audio → apad im lặng đến total_dur
     filter_complex = (
-        f"[0:v]{zoompan}[kbg];"
+        f"[0:v]{kb}[kbg];"
         f"[1:v]format=rgba[ov];"
         f"[kbg][ov]overlay=0:0[v];"
         f"[2:a]apad=whole_dur={total_dur}[a]"
@@ -122,7 +134,7 @@ def _render_scene(bg_path: Path, overlay_path: Path, audio_path: Path,
         "-map", "[v]",
         "-map", "[a]",
         "-t", str(total_dur),
-        "-c:v", "libx264", "-preset", "fast", "-crf", "21",
+        "-c:v", "libx264", "-preset", "fast", "-crf", "18",
         "-pix_fmt", "yuv420p",
         "-c:a", "aac", "-ar", "44100",
         str(output_path),
