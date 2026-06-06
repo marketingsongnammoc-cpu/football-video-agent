@@ -65,7 +65,7 @@ out_dir.mkdir(parents=True, exist_ok=True)
 total = len(SCENES)
 for idx, scene in enumerate(SCENES):
     sid  = scene["id"]
-    img  = test_img if idx == 0 else None
+    img  = test_img  # reuse same image for all scenes (visual test)
     bg   = out_dir / f"bg_{sid}.jpg"
     ov   = out_dir / f"overlay_{sid}.png"
     meta = render_scene(scene, img, bg, ov, scene_index=idx, total_scenes=total)
