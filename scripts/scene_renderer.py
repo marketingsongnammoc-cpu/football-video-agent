@@ -1,225 +1,172 @@
 """
-scene_renderer.py — Template compositing. KHÔNG thiết kế lại template.
+scene_renderer.py — Render engine cho video frame THỂ THAO 247.
 
-QUY TẮC CỨNG:
-  - Template PNG là nền bất biến. Không vẽ lại, không tạo panel mới.
-  - Chỉ được PASTE article image vào đúng vùng quy định.
-  - Chỉ được FILL vùng text nhỏ để che placeholder, rồi draw text.
-  - Không được touch logo, badge, category, panel gốc.
+CÔNG THỨC DUY NHẤT:
+    canvas = Image.open(background.png)        ← template gốc, đầy đủ thiết kế
+    paste(article_image, image_slot)           ← ảnh bài viết lớn, phủ lên vùng ảnh chính
+    fill_text_zone(zone, zone.fill_color)      ← xóa placeholder text bằng fill màu panel
+    draw_text(category, badge, headline, sub)  ← đặt text mới
+    save()
 
-FLOW:
-  template = Image.open(...).resize(1080x1920)    # bản copy
-  paste(article_image, box)                        # chèn ảnh bài viết
-  fill(headline_zone, bg_color)                    # che placeholder cũ
-  draw_text(headline)                              # vẽ tiêu đề mới
-  fill(subtitle_zone, bg_color)                   # che placeholder cũ
-  draw_text(subtitle)                             # vẽ mô tả mới
-  save("output/frames/...")                        # KHÔNG ghi vào assets/templates/
+KHÔNG dùng foreground_overlay.png:
+    - foreground_overlay có inner box viền đỏ (cái frame sai của thumbnail nhỏ)
+    - foreground_overlay che panel đẹp của background.png
+    → Loại bỏ hoàn toàn, chỉ dùng background.png
+
+Fill text zone:
+    - KHÔNG phải tự dựng panel/badge/layout mới
+    - Chỉ fill đè lên vùng text placeholder nhỏ với màu background tương ứng
+    - Các design element (badge shape, borders, lines) vẫn từ background.png
 """
 
 from __future__ import annotations
-import hashlib
+import json
+import re
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
-# ───────────────────────────────────────────────────────────
-# Constants
-# ───────────────────────────────────────────────────────────
 CANVAS_W, CANVAS_H = 1080, 1920
 TEMPLATE_DIR = Path(__file__).parent.parent / "assets" / "templates"
+FONT_DIR     = Path(__file__).parent.parent / "assets" / "fonts"
 
-# Cấu hình mỗi template: vùng ảnh bài viết + vùng text (trong 1080×1920)
-# Đo từ template gốc, KHÔNG được thay đổi.
-TEMPLATE_CONFIG = {
-    # Vị trí đo thực tế từ pixel-scan trên template 1080×1920
-    "chuyen-nhuong": {
-        "article": {"x": 610, "y": 390, "w": 360, "h": 430},
-        # Headline placeholder thực: y=1330-1445 → fill từ y=1310, cao 155px
-        # Draw tại y=1320 (theo document)
-        "headline": {"x": 90, "fill_y": 1310, "fill_h": 155,
-                     "draw_y": 1320, "w": 900,
-                     "bg": (12, 14, 17), "size": 72, "lines": 2},
-        # Subtitle placeholder thực: y=1485-1575 → fill từ y=1480, cao 100px
-        "subtitle": {"x": 150, "fill_y": 1480, "fill_h": 100,
-                     "draw_y": 1495, "w": 780,
-                     "bg": (0, 2, 6), "size": 34, "lines": 2},
-    },
-    "tin-nhanh": {
-        "article": {"x": 610, "y": 390, "w": 360, "h": 430},
-        # Headline placeholder thực: y=1385-1485 → fill từ y=1260 (gộp cả badge text)
-        "headline": {"x": 90, "fill_y": 1260, "fill_h": 230,
-                     "draw_y": 1340, "w": 900,
-                     "bg": (1, 3, 12), "size": 72, "lines": 2},
-        # Subtitle: bên dưới headline, ước tính y=1495-1560
-        "subtitle": {"x": 150, "fill_y": 1490, "fill_h": 200,
-                     "draw_y": 1500, "w": 780,
-                     "bg": (3, 3, 7), "size": 34, "lines": 2},
-    },
-    "phan-tich": {
-        "article": {"x": 610, "y": 390, "w": 360, "h": 430},
-        "headline": {"x": 90, "fill_y": 1260, "fill_h": 230,
-                     "draw_y": 1340, "w": 900,
-                     "bg": (1, 3, 12), "size": 72, "lines": 2},
-        "subtitle": {"x": 150, "fill_y": 1490, "fill_h": 200,
-                     "draw_y": 1500, "w": 780,
-                     "bg": (3, 3, 7), "size": 34, "lines": 2},
-    },
-    "nhan-dinh-tran-dau": {
-        "article": {"x": 610, "y": 320, "w": 360, "h": 380},
-        "headline": {"x": 90, "fill_y": 1260, "fill_h": 230,
-                     "draw_y": 1340, "w": 900,
-                     "bg": (12, 4, 7), "size": 68, "lines": 2},
-        "subtitle": {"x": 150, "fill_y": 1490, "fill_h": 200,
-                     "draw_y": 1500, "w": 780,
-                     "bg": (8, 5, 8), "size": 32, "lines": 2},
-    },
-    "ket-qua-tran-dau": {
-        "article": {"x": 610, "y": 320, "w": 360, "h": 380},
-        "headline": {"x": 90, "fill_y": 1260, "fill_h": 230,
-                     "draw_y": 1340, "w": 900,
-                     "bg": (12, 13, 16), "size": 68, "lines": 2},
-        "subtitle": {"x": 150, "fill_y": 1490, "fill_h": 200,
-                     "draw_y": 1500, "w": 780,
-                     "bg": (0, 0, 4), "size": 32, "lines": 2},
-    },
-    "dang-ky-kenh": None,  # end card — không thay đổi gì
-}
+_INTER = FONT_DIR / "Inter-Variable.ttf"
 
-# Map tag → template
-_TAG_TEMPLATE = {
-    "CHUYỂN NHƯỢNG": "chuyen-nhuong",
-    "TRẬN ĐẤU":      "nhan-dinh-tran-dau",
-    "CHIẾN THUẬT":   "phan-tich",
-}
-
-# ───────────────────────────────────────────────────────────
-# Font
-# ───────────────────────────────────────────────────────────
-_FONT_BOLD = next(
-    str(p) for p in [
+_FALLBACK_BOLD = next(
+    (p for p in [
         Path("C:/Windows/Fonts/segoeuib.ttf"),
-        Path("/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf"),
-        Path("/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"),
-        Path("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"),
-    ] if p.exists()
-)
-_FONT_REG = next(
-    str(p) for p in [
         Path("C:/Windows/Fonts/arialbd.ttf"),
+    ] if p.exists()),
+    None,
+)
+_FALLBACK_REG = next(
+    (p for p in [
         Path("C:/Windows/Fonts/segoeui.ttf"),
-        Path("/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf"),
-        Path("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"),
-        Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
-    ] if p.exists()
+        Path("C:/Windows/Fonts/arial.ttf"),
+    ] if p.exists()),
+    None,
 )
 
-# ───────────────────────────────────────────────────────────
-# Template protection
-# ───────────────────────────────────────────────────────────
-_CHECKSUMS: dict[str, str] = {}
 
-def _load_template(name: str) -> Image.Image:
-    """
-    Mở template → resize về 1080×1920 → trả về bản COPY.
-    KHÔNG BAO GIỜ ghi vào file gốc.
-    """
-    path = TEMPLATE_DIR / f"{name}.png"
-    if not path.exists():
-        raise FileNotFoundError(f"Template không có: {path}")
-    cs = hashlib.md5(path.read_bytes()).hexdigest()[:8]
-    if name in _CHECKSUMS and _CHECKSUMS[name] != cs:
-        raise RuntimeError(f"Template {name} bị thay đổi! Restore lại file gốc.")
-    _CHECKSUMS.setdefault(name, cs)
-    img = Image.open(path).convert("RGBA")
-    return img.resize((CANVAS_W, CANVAS_H), Image.Resampling.LANCZOS)
+# ─── Font ─────────────────────────────────────────────────────────────────────
 
-# ───────────────────────────────────────────────────────────
-# Text helpers
-# ───────────────────────────────────────────────────────────
+def _get_font(size: int, bold: bool) -> ImageFont.FreeTypeFont:
+    src = _INTER if _INTER.exists() else (_FALLBACK_BOLD if bold else _FALLBACK_REG)
+    if src is None:
+        return ImageFont.load_default()
+    try:
+        font = ImageFont.truetype(str(src), size)
+        if _INTER.exists():
+            try:
+                font.set_variation_by_name("Bold" if bold else "Regular")
+            except Exception:
+                pass
+        return font
+    except Exception:
+        return ImageFont.load_default()
 
-def _measure(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.FreeTypeFont):
+
+# ─── Text helpers ─────────────────────────────────────────────────────────────
+
+def _measure(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.FreeTypeFont) -> tuple[int, int]:
     b = draw.textbbox((0, 0), text, font=font)
     return b[2] - b[0], b[3] - b[1]
 
 
-def _wrap_text(draw, text: str, font, max_w: int) -> list[str]:
+def _wrap(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.FreeTypeFont, max_w: int) -> list[str]:
     words, lines, cur = text.split(), [], ""
     for w in words:
         cand = f"{cur} {w}".strip()
         if _measure(draw, cand, font)[0] <= max_w:
             cur = cand
         else:
-            if cur: lines.append(cur)
+            if cur:
+                lines.append(cur)
             cur = w
-    if cur: lines.append(cur)
-    return lines
+    if cur:
+        lines.append(cur)
+    return lines or [text]
 
 
-def _draw_text_in_zone(canvas: Image.Image, text: str, zone: dict,
-                        font_path: str, color=(255, 255, 255, 255)) -> None:
+def _draw_text_zone(canvas: Image.Image, text: str, zone: dict) -> None:
     """
-    Fill vùng placeholder cũ + vẽ text mới vào đúng vùng panel template.
-    zone cần có: x, fill_y, fill_h, draw_y, w, bg, size, lines
+    Xóa placeholder text bằng fill, rồi draw text mới.
+    fill_color từ text_config.json — màu background panel tương ứng.
+    Đây KHÔNG phải tự dựng panel mới — chỉ đè màu nhỏ lên vùng text.
     """
-    x         = zone["x"]
-    w         = zone["w"]
-    fill_y    = zone["fill_y"]
-    fill_h    = zone["fill_h"]
-    draw_y    = zone["draw_y"]
-    bg        = zone["bg"] + (255,)   # fully opaque
-    start_size = zone["size"]
-    max_lines  = zone["lines"]
+    if not text:
+        return
 
+    x, y, w, h = zone["x"], zone["y"], zone["w"], zone["h"]
     draw = ImageDraw.Draw(canvas)
 
-    # 1. Fill vùng placeholder bằng màu nền thật của template (che text cũ)
-    draw.rectangle([0, fill_y, CANVAS_W, fill_y + fill_h], fill=bg)
+    # Fill để xóa placeholder text (màu khớp background panel)
+    raw_fill = zone.get("fill_color")
+    if raw_fill:
+        fill_rgba = tuple(raw_fill[:4]) if len(raw_fill) >= 4 else tuple(raw_fill[:3]) + (255,)
+        draw.rectangle([x, y, x + w, y + h], fill=fill_rgba)
 
-    # 2. Tìm font size vừa vặn với max_lines
-    size = start_size
-    chosen_lines, chosen_font = [], None
-    while size >= 28:
-        font  = ImageFont.truetype(font_path, size)
-        lines = _wrap_text(draw, text, font, w)
+    uppercase = zone.get("uppercase", False)
+    display   = text.upper() if uppercase else text
+    bold      = zone.get("bold", True)
+    max_sz    = zone.get("font_size_max", 48)
+    min_sz    = zone.get("font_size_min", 20)
+    max_lines = zone.get("max_lines", 2)
+    align     = zone.get("align", "left")
+    raw_color = zone.get("color", [255, 255, 255, 255])
+    color     = tuple(raw_color[:4]) if len(raw_color) == 4 else tuple(raw_color[:3]) + (255,)
+
+    # Auto-shrink font để vừa max_lines
+    chosen_lines: list[str] = []
+    chosen_font: ImageFont.FreeTypeFont | None = None
+    for sz in range(max_sz, min_sz - 1, -2):
+        font  = _get_font(sz, bold)
+        lines = _wrap(draw, display, font, w)
         if len(lines) <= max_lines:
             chosen_lines = lines
             chosen_font  = font
             break
-        size -= 4
     if not chosen_lines:
-        font   = ImageFont.truetype(font_path, 28)
-        lines  = _wrap_text(draw, text, font, w)
-        chosen_lines = lines[:max_lines]
-        chosen_font  = font
+        chosen_font  = _get_font(min_sz, bold)
+        chosen_lines = _wrap(draw, display, chosen_font, w)[:max_lines]
 
-    # 3. Vẽ text căn giữa ngang, bắt đầu tại draw_y
-    line_h = int(chosen_font.size * 1.12)
-    cur_y  = draw_y
+    # Vertical center trong zone
+    line_h  = int(chosen_font.size * 1.18)
+    total_h = line_h * len(chosen_lines)
+    cur_y   = y + max(0, (h - total_h) // 2)
+
     for line in chosen_lines:
         lw, _ = _measure(draw, line, chosen_font)
-        lx    = x + (w - lw) // 2   # căn giữa trong width
+        if align == "center":
+            lx = x + (w - lw) // 2
+        elif align == "right":
+            lx = x + w - lw
+        else:
+            lx = x
+        # Shadow nhẹ
         draw.text((lx + 1, cur_y + 1), line, font=chosen_font, fill=(0, 0, 0, 160))
         draw.text((lx, cur_y),         line, font=chosen_font, fill=color)
         cur_y += line_h
 
 
-# ───────────────────────────────────────────────────────────
-# Article image compositing
-# ───────────────────────────────────────────────────────────
+# ─── Article image compositing ────────────────────────────────────────────────
 
-def _paste_article_image(canvas: Image.Image, image_path: Path, zone: dict) -> None:
+def _paste_article_image(canvas: Image.Image, image_path: Path, slot: dict) -> None:
     """
-    Chèn ảnh bài viết vào đúng vùng quy định.
-    Crop theo tỉ lệ zone, bo góc 22px, overlay tối 25%, viền #B80F16 2px.
-    Không đặt ảnh đè lên logo, badge, panel tiêu đề.
+    Paste ảnh bài viết lớn vào vùng ảnh chính.
+    Cover crop (không méo), bo góc nhẹ, overlay tối nhẹ.
+    Ảnh phải đủ lớn — là visual chính của video.
     """
-    x, y, w, h = zone["x"], zone["y"], zone["w"], zone["h"]
+    x, y, w, h = slot["x"], slot["y"], slot["w"], slot["h"]
+    radius     = slot.get("border_radius", slot.get("radius", 0))
+    ov_opacity = slot.get("overlay_opacity", 0)
+
     try:
         art = Image.open(image_path).convert("RGBA")
-    except Exception:
+    except Exception as e:
+        print(f"  ⚠ Không mở được ảnh: {e}")
         return
 
-    # Crop theo đúng tỉ lệ zone (giống code mẫu trong document)
+    # Cover crop — giữ center, không méo
     target_ratio = w / h
     img_ratio    = art.width / art.height
     if img_ratio > target_ratio:
@@ -230,120 +177,181 @@ def _paste_article_image(canvas: Image.Image, image_path: Path, zone: dict) -> N
         new_h = int(art.width / target_ratio)
         top   = (art.height - new_h) // 2
         art   = art.crop((0, top, art.width, top + new_h))
-
     art = art.resize((w, h), Image.Resampling.LANCZOS)
 
-    # Bo góc 22px
-    from PIL import ImageDraw as _ID
+    # Bo góc nhẹ
     mask = Image.new("L", (w, h), 0)
-    _ID.Draw(mask).rounded_rectangle((0, 0, w, h), radius=22, fill=255)
+    if radius > 0:
+        ImageDraw.Draw(mask).rounded_rectangle((0, 0, w, h), radius=radius, fill=255)
+    else:
+        mask.paste(255, [0, 0, w, h])
 
-    # Overlay tối 25% (dark_overlay_opacity = 25%)
-    overlay = Image.new("RGBA", (w, h), (0, 0, 0, 64))   # 64/255 ≈ 25%
-    art = Image.alpha_composite(art, overlay)
+    # Dark overlay nhẹ nếu ảnh quá sáng
+    if ov_opacity > 0:
+        overlay = Image.new("RGBA", (w, h), (0, 0, 0, ov_opacity))
+        art = Image.alpha_composite(art, overlay)
 
-    # Dán vào canvas
     canvas.paste(art, (x, y), mask)
 
-    # Viền đỏ mảnh 2px (#B80F16)
-    ImageDraw.Draw(canvas).rounded_rectangle(
-        (x, y, x + w, y + h),
-        radius=22,
-        outline=(184, 15, 22, 230),
-        width=2,
-    )
+
+# ─── Template loader ──────────────────────────────────────────────────────────
+
+def _load_template(name: str) -> tuple[Image.Image, dict | None]:
+    """
+    Load background.png từ assets/templates/{name}/.
+    KHÔNG dùng foreground_overlay — nó có inner box sai và che panel đẹp.
+    Returns: (background_canvas, config)
+    """
+    folder = TEMPLATE_DIR / name
+    if not folder.exists():
+        raise FileNotFoundError(
+            f"Template folder không tìm thấy: {folder}\n"
+            f"Đặt template vào: assets/templates/{name}/"
+        )
+
+    bg_path = folder / "background.png"
+    if not bg_path.exists():
+        raise FileNotFoundError(f"Thiếu background.png trong {folder}")
+
+    bg = Image.open(bg_path).convert("RGBA")
+    if bg.size != (CANVAS_W, CANVAS_H):
+        bg = bg.resize((CANVAS_W, CANVAS_H), Image.Resampling.LANCZOS)
+
+    cfg_path = folder / "text_config.json"
+    cfg = json.loads(cfg_path.read_text(encoding="utf-8")) if cfg_path.exists() else None
+
+    return bg, cfg
 
 
-# ───────────────────────────────────────────────────────────
-# Template selection
-# ───────────────────────────────────────────────────────────
+# ─── Tag → template mapping ───────────────────────────────────────────────────
+
+_TAG_MAP: dict[str, str] = {
+    "CHUYỂN NHƯỢNG": "chuyen-nhuong",
+    "CHUYÊN NHƯỢNG": "chuyen-nhuong",
+    "KẾT QUẢ":       "ket-qua-tran-dau",
+    "NHẬN ĐỊNH":     "nhan-dinh-tran-dau",
+    "TRẬN ĐẤU":      "nhan-dinh-tran-dau",
+    "PHÂN TÍCH":     "phan-tich",
+    "CHIẾN THUẬT":   "phan-tich",
+    "TIN NHANH":     "tin-nhanh",
+    "BREAKING":      "tin-nhanh",
+}
+
+_DEFAULT_BADGE: dict[str, str] = {
+    "chuyen-nhuong":      "ĐÀM PHÁN",
+    "tin-nhanh":          "CẬP NHẬT",
+    "phan-tich":          "PHÂN TÍCH",
+    "nhan-dinh-tran-dau": "TRƯỚC TRẬN",
+    "ket-qua-tran-dau":   "KẾT THÚC",
+    "dang-ky-kenh":       "",
+}
+
+_DEFAULT_CATEGORY: dict[str, str] = {
+    "chuyen-nhuong":      "CHUYỂN NHƯỢNG",
+    "tin-nhanh":          "TIN NHANH",
+    "phan-tich":          "PHÂN TÍCH",
+    "nhan-dinh-tran-dau": "NHẬN ĐỊNH TRẬN ĐẤU",
+    "ket-qua-tran-dau":   "KẾT QUẢ TRẬN ĐẤU",
+    "dang-ky-kenh":       "",
+}
+
 
 def _select_template(tag: str) -> str:
-    import re
     clean = re.sub(r"[^\w\sÀ-ɏḀ-ỿ]", "", tag).strip().upper()
-    for key, tmpl in _TAG_TEMPLATE.items():
+    for key, tmpl in _TAG_MAP.items():
         if key in clean:
             return tmpl
     return "tin-nhanh"
 
 
-# ───────────────────────────────────────────────────────────
-# Public API — giữ interface cũ cho main.py
-# ───────────────────────────────────────────────────────────
+# ─── Public API ───────────────────────────────────────────────────────────────
 
-def render_scene(scene: dict, image_path: Path | None, bg_output: Path,
-                 overlay_output: Path, scene_index: int = 0,
-                 total_scenes: int = 4) -> dict:
+def render_scene(
+    scene: dict,
+    image_path: Path | None,
+    bg_output: Path,
+    overlay_output: Path,
+    scene_index: int = 0,
+    total_scenes: int = 4,
+) -> dict:
     """
-    Composite 1 scene đúng quy trình:
-      1. Mở template (bản copy, resize 1080×1920)
-      2. Paste ảnh bài viết vào vùng quy định
-      3. Fill + draw text tại headline zone
-      4. Fill + draw text tại subtitle zone
-      5. Save ra output — KHÔNG ghi vào assets/templates/
+    Render 1 scene:
+        1. Open background.png (đầy đủ thiết kế: logo, panel, badge, borders)
+        2. Paste ảnh bài viết lớn vào vùng ảnh chính
+        3. Fill text zones để xóa placeholder text
+        4. Draw text mới (category, badge, headline, subtitle)
+        5. Save
     """
-    tag       = scene.get("tag", "⚡ BREAKING")
+    tag       = scene.get("tag", "TIN NHANH")
     tmpl_name = _select_template(tag)
-    cfg       = TEMPLATE_CONFIG.get(tmpl_name)
 
-    if cfg is None:
-        # end card — giữ nguyên template, không thêm gì
-        canvas = _load_template(tmpl_name)
-        overlay_output.parent.mkdir(parents=True, exist_ok=True)
-        canvas.convert("RGB").save(overlay_output, "PNG")
-        bg_output.parent.mkdir(parents=True, exist_ok=True)
-        canvas.convert("RGB").save(bg_output, "JPEG", quality=85)
-        return {"template": tmpl_name, "aspect": 1.0,
-                "image_size": (0, 0), "bg_size": (CANVAS_W, CANVAS_H)}
+    if scene_index == total_scenes - 1:
+        tmpl_name = "dang-ky-kenh"
 
-    # 1. Mở template — bản copy resized
-    canvas = _load_template(tmpl_name)
+    canvas, cfg = _load_template(tmpl_name)
 
-    # 2. Paste ảnh bài viết vào đúng vùng (không đè logo/panel)
+    if cfg:
+        # Bước 2: Paste ảnh bài viết lớn
+        slot = cfg.get("article_image")
+        if slot and image_path and image_path.exists():
+            _paste_article_image(canvas, image_path, slot)
+
+        # Bước 3+4: Fill text zones + draw text mới
+        texts = {
+            "category": scene.get("category") or _DEFAULT_CATEGORY.get(tmpl_name, ""),
+            "badge":    scene.get("badge")    or _DEFAULT_BADGE.get(tmpl_name, ""),
+            "headline": scene.get("headline", ""),
+            "subtitle": scene.get("subtext",  ""),
+        }
+        for zone in cfg.get("text_zones", []):
+            key = zone.get("key", "")
+            val = texts.get(key, "")
+            if val:
+                _draw_text_zone(canvas, val, zone)
+
+    img_orig = None
     if image_path and image_path.exists():
-        _paste_article_image(canvas, image_path, cfg["article"])
+        try:
+            img_orig = Image.open(image_path)
+        except Exception:
+            pass
 
-    # 3. Fill + draw headline trong panel gốc của template
-    _draw_text_in_zone(canvas, scene["headline"],
-                       cfg["headline"], _FONT_BOLD)
-
-    # 4. Fill + draw subtitle trong panel gốc của template
-    _draw_text_in_zone(canvas, scene["subtext"],
-                       cfg["subtitle"], _FONT_REG,
-                       color=(200, 200, 205, 220))
-
-    # 5. Lưu ra output — TUYỆT ĐỐI không ghi vào assets/templates/
     overlay_output.parent.mkdir(parents=True, exist_ok=True)
-    canvas.convert("RGB").save(overlay_output, "PNG", optimize=True)
     bg_output.parent.mkdir(parents=True, exist_ok=True)
+    canvas.convert("RGB").save(overlay_output, "PNG", optimize=True)
     canvas.convert("RGB").save(bg_output, "JPEG", quality=85)
 
-    img_orig = Image.open(image_path) if image_path and image_path.exists() else None
-    aspect   = (img_orig.size[0] / img_orig.size[1]) if img_orig else 1.0
     return {
-        "template": tmpl_name,
-        "aspect":   aspect,
+        "template":   tmpl_name,
+        "aspect":     (img_orig.width / img_orig.height) if img_orig else 1.0,
         "image_size": img_orig.size if img_orig else (0, 0),
-        "bg_size":  (CANVAS_W, CANVAS_H),
+        "bg_size":    (CANVAS_W, CANVAS_H),
     }
 
 
-def render_all_scenes(scenes: list[dict], images_dir: Path, frames_dir: Path) -> list[dict]:
+def render_all_scenes(
+    scenes: list[dict], images_dir: Path, frames_dir: Path
+) -> list[dict]:
     results = []
     for idx, scene in enumerate(scenes):
-        scene_id = scene.get("id", f"{idx+1:02d}")
+        scene_id   = scene.get("id", f"{idx+1:02d}")
         image_path = None
-        for ext in [".jpg", ".jpeg", ".png", ".webp"]:
+        for ext in (".jpg", ".jpeg", ".png", ".webp"):
             cand = images_dir / f"scene_{scene_id}{ext}"
             if cand.exists():
-                image_path = cand; break
+                image_path = cand
+                break
 
         bg_out = frames_dir / f"bg_{scene_id}.jpg"
         ov_out = frames_dir / f"overlay_{scene_id}.png"
-        meta   = render_scene(scene, image_path, bg_out, ov_out,
-                               scene_index=idx, total_scenes=len(scenes))
+        meta   = render_scene(
+            scene, image_path, bg_out, ov_out,
+            scene_index=idx, total_scenes=len(scenes),
+        )
         meta["scene_id"] = scene_id
         results.append(meta)
-        print(f"  ✓ scene {scene_id} → {CANVAS_W}×{CANVAS_H}"
-              f" template={meta['template']} (aspect {meta['aspect']:.2f})")
+        print(
+            f"  ✓ scene {scene_id} → {CANVAS_W}×{CANVAS_H}"
+            f"  template={meta['template']}  aspect={meta['aspect']:.2f}"
+        )
     return results

@@ -1,0 +1,80 @@
+{
+  "article_image": {
+    "x": 60,
+    "y": 210,
+    "w": 960,
+    "h": 870,
+    "border_radius": 0,
+    "overlay_opacity": 30
+  },
+  "text_zones": [
+    {
+      "key": "category",
+      "source": "tag",
+      "x": 540,
+      "y": 82,
+      "w": 510,
+      "h": 55,
+      "fill_color": [0, 0, 5, 255],
+      "font": "Inter-Variable.ttf",
+      "bold": true,
+      "font_size_max": 24,
+      "font_size_min": 14,
+      "color": [255, 255, 255, 255],
+      "align": "right",
+      "max_lines": 1,
+      "uppercase": true
+    },
+    {
+      "key": "badge",
+      "source": "tag",
+      "x": 330,
+      "y": 1208,
+      "w": 410,
+      "h": 62,
+      "fill_color": [141, 20, 20, 255],
+      "font": "Inter-Variable.ttf",
+      "bold": true,
+      "font_size_max": 24,
+      "font_size_min": 14,
+      "color": [255, 255, 255, 255],
+      "align": "center",
+      "max_lines": 1,
+      "uppercase": true
+    },
+    {
+      "key": "headline",
+      "source": "headline",
+      "x": 55,
+      "y": 1280,
+      "w": 970,
+      "h": 310,
+      "fill_color": [0, 2, 8, 255],
+      "font": "Inter-Variable.ttf",
+      "bold": true,
+      "font_size_max": 80,
+      "font_size_min": 36,
+      "color": [255, 255, 255, 255],
+      "align": "left",
+      "max_lines": 3,
+      "uppercase": false
+    },
+    {
+      "key": "subtitle",
+      "source": "subtext",
+      "x": 55,
+      "y": 1635,
+      "w": 970,
+      "h": 100,
+      "fill_color": [0, 2, 8, 255],
+      "font": "Inter-Variable.ttf",
+      "bold": false,
+      "font_size_max": 30,
+      "font_size_min": 16,
+      "color": [200, 200, 205, 210],
+      "align": "left",
+      "max_lines": 2,
+      "uppercase": false
+    }
+  ]
+}
