@@ -2917,5 +2917,12 @@
     "reason": "script_gen_failed",
     "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
     "timestamp": "2026-06-05T20:00:27.292670"
+  },
+  {
+    "url": "https://vnexpress.net/perez-toi-khong-can-tien-chi-mang-ve-cac-sieu-sao-va-chien-thang-5082746.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 1: subtext quá nhiều từ (17 > 16)', 'Scene 2: subtext quá nhiều từ (17 > 16)', 'Scene 4: subtext quá nhiều từ (19 > 16)']. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"Perez: \\\"Tôi không cần tiền!\\\"\",\n      \"subtext\": \"Chỉ cần siêu sao, chiến thắng!\",\n      \"narration\": \"Florentino Perez, chủ tịch Real Madrid, gây sốc khi tuyên bố bầu cử sớm. Ông khẳng định không cần tiền, chỉ mang",
+    "timestamp": "2026-06-07T22:47:37.093059"
   }
 ]
