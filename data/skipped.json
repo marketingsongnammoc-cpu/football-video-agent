@@ -2777,5 +2777,145 @@
     "reason": "script_gen_failed",
     "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 4: subtext quá nhiều từ (17 > 16)']. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"Messi hay Ronaldo? Di Maria chốt!\",\n      \"subtext\": \"Ai là GOAT? Nghe Di Maria tiết lộ bí mật.\",\n      \"narration\": \"Cuộc tranh cãi vĩ đại nhất lịch sử bóng đá: Messi hay Ronaldo? Di Maria, người từng sát cánh cùng cả hai siêu sao, cuối cùng đã đưa ra phán quyết của mình. Liệu anh sẽ nghiêng về ai? Cùng khám phá ngay!\",\n      \"tag\": \"👤 NGÔI SAO\"\n    },\n    {\n      \"headline\": \"Ronaldo: Khổ luyện thành công!\",\n      \"subtext\": \"Tinh thần thép, nỗ ",
     "timestamp": "2026-06-04T17:31:22.627072"
+  },
+  {
+    "url": "https://vnexpress.net/phia-sau-vu-de-bruyne-cong-kich-hlv-conte-5081219.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 1: narration quá dài (47 > 45 từ)', \"Scene 5: tag không hợp lệ: '👤 NGÔI SAAO'\"]. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"De Bruyne Tấn Công Conte!\",\n      \"subtext\": \"Tuyển thủ Bỉ \\\"mừng\\\" vì HLV đã rời Napoli.\",\n      \"narration\": \"Kevin De Bruyne gây sốc! Ngôi sao người Bỉ không ngần ngại công kích HLV Conte",
+    "timestamp": "2026-06-05T11:51:49.049825"
+  },
+  {
+    "url": "https://vnexpress.net/phia-sau-vu-de-bruyne-cong-kich-hlv-conte-5081219.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"De Bruyne Tấn Công Conte!\",\n      \"subtext\": \"\\\"Mừng vì Conte rời đi!\\\" Tiền vệ Bỉ sốc toàn tập.\",\n      \"narration\": \"Chấn động làng túc cầu! Kevin De Bruyne không ngần ngại công kích HLV Conte. Anh tuyên bố \\\"mừng vì Conte đã rời Napoli\\\", tố cáo chiến lược gia này thất hứa về lối chơi. Một phát biểu cực gắt, mở màn cho drama không hồi kết!\",\n      \"tag\": \"⚡ BREAKING\"\n    },\n    {",
+    "timestamp": "2026-06-05T17:30:42.557373"
+  },
+  {
+    "url": "https://vnexpress.net/viet-nam-nam-uu-the-truoc-indonesia-o-giai-u19-dong-nam-a-5082123.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"Đại chiến U19: Việt Nam vs Indonesia!\",\n      \"subtext\": \"Chủ nhà buộc thắng, Việt Nam chỉ cần hòa!\",\n      \"narration\": \"Đêm nay, sân vận động Medan bùng nổ! U19 Việt Nam đối đầu chủ nhà Indonesia trong trận đấu quyết định",
+    "timestamp": "2026-06-05T17:31:40.906432"
+  },
+  {
+    "url": "https://vnexpress.net/viet-nam-tiep-tuc-thang-dam-o-giai-u19-dong-nam-a-5082066.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+    "timestamp": "2026-06-05T17:32:25.537611"
+  },
+  {
+    "url": "https://vnexpress.net/phia-sau-vu-de-bruyne-cong-kich-hlv-conte-5081219.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+    "timestamp": "2026-06-05T17:45:31.341933"
+  },
+  {
+    "url": "https://vnexpress.net/viet-nam-nam-uu-the-truoc-indonesia-o-giai-u19-dong-nam-a-5082123.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 1: narration quá dài (51 > 45 từ)', 'Scene 2: narration quá dài (51 > 45 từ)', 'Scene 3: narration quá dài (50 > 45 từ)', 'Scene 4: narration quá dài (49 > 45 từ)', 'Scene 5: narration quá dài (52 > 45 từ)']. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+    "timestamp": "2026-06-05T17:46:06.264758"
+  },
+  {
+    "url": "https://vnexpress.net/viet-nam-tiep-tuc-thang-dam-o-giai-u19-dong-nam-a-5082066.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"Việt Nam Hủy Diệt Myanmar 5-0!\",\n      \"subtext\": \"U19 Việt Nam thắng đậm, giữ vững ngôi đầu bảng A.\",\n      \"narration\": \"Một màn trình diễn không thể tin được! U19 Việt Nam đã thể hiện sức mạnh áp đảo, ghi tới 5 bàn thắng vào lưới Myanmar. Từ những pha phối hợp đẹp mắt đến các tình huống dứt điểm lạnh lùng, các chàng trai áo đỏ đã cống hiến một bữa tiệc bóng đá mãn nhãn!\",\n      \"tag\": \"⚡ BREAKING\"\n    },\n    {\n      \"headline\": \"Công Hậu: Ngôi ",
+    "timestamp": "2026-06-05T17:46:36.020727"
+  },
+  {
+    "url": "https://vnexpress.net/real-mua-hau-ve-30-tuoi-tu-inter-5081426.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 4: narration quá dài (47 > 45 từ)']. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+    "timestamp": "2026-06-05T17:47:26.813478"
+  },
+  {
+    "url": "https://vnexpress.net/goc-re-gay-bao-loan-sau-cac-su-kien-bong-da-o-phap-5081275.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Không parse được JSON:\\n```json\\n{\\n  \"scenes\": [\\n    {\\n      \"headline\": \"Paris: Ăn mừng hay Bạo loạn?\",\\n      \"subtext\": \"900 người bị bắt, 1 người chết sau chiến thắng lịch sử của PSG!\",\\n      \"narration\": \"PSG vô địch C1, Paris bùng nổ! Nhưng giữa biển người ăn mừng, đường phố lại biến thành chiến trường. Gần 900 người bị bắt, hàng trăm người bị thương, thậm chí 1 thanh niên 23 tuổi tử vong. Chuyện gì đang xảy ra?\",\\n      \"tag\": \"⚡ BREAKING\"\\n    },\\n    {\\n      \"headline\": \"22.000 Cảnh sát BẤT LỰC?\",']. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+    "timestamp": "2026-06-05T17:48:11.377682"
+  },
+  {
+    "url": "https://vnexpress.net/vi-sao-nguoi-phap-thuong-bao-loan-sau-nhung-chien-thang-bong-da-5080921.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 3: narration quá dài (51 > 45 từ)', 'Scene 5: narration quá dài (46 > 45 từ)']. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+    "timestamp": "2026-06-05T17:49:18.284569"
+  },
+  {
+    "url": "https://vnexpress.net/viet-nam-nam-uu-the-truoc-indonesia-o-giai-u19-dong-nam-a-5082123.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"VIỆT NAM ĐẠI CHIẾN INDONESIA!\",\n      \"subtext\": \"Trận cầu định đoạt ngôi đầu bảng A.\",\n      \"narration\": \"Cả Đông Nam Á đang nín thở chờ đợi! U19 Việt Nam và chủ nhà Indonesia sẽ đối đầu trực tiếp trong trận đấu quyết định ngôi đầu bảng A. Liệu \\\"Rồng Vàng\\\" có giữ vững lợi thế, hay \\\"Garuda\\\" sẽ vùng lên mạnh mẽ? Đừng bỏ lỡ!\",\n      \"tag\": \"⚡ BREAKING\"\n    },\n    {\n      \"headline\": \"HÒA LÀ VÔ ĐỊCH BẢNG!\",\n      \"subtext\": \"U19 Việt Nam nắm quy",
+    "timestamp": "2026-06-05T17:54:25.598734"
+  },
+  {
+    "url": "https://vnexpress.net/vi-sao-nguoi-phap-thuong-bao-loan-sau-nhung-chien-thang-bong-da-5080921.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"Pháp: Ăn mừng hay Bạo loạn?\",\n      \"subtext\": \"Chiến thắng bóng đá, hỗn loạn đường phố.\",\n      \"narration\": \"Khi niềm vui chiến thắng bóng đá biến thành cơn ác mộng đường phố! Tại sao Pháp liên tục chứng kiến bạo loạn sau mỗi danh hiệu của PSG, trong khi London lại bình yên? Một câu hỏi lớn đang chờ lời giải đáp!\",\n      \"tag\": \"⚡ BREAKING\"\n    },\n    {\n      \"headline\": \"Bộ trưởng Pháp: Không lỗi cảnh sát!\",\n      \"subtext\": \"Đổ lỗi kẻ phá hoại",
+    "timestamp": "2026-06-05T18:06:32.588545"
+  },
+  {
+    "url": "https://vnexpress.net/cdv-man-utd-cam-dau-buoi-dieu-hanh-mung-that-bai-cua-arsenal-5081282.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"CĐV Ăn Mừng Thất Bại Đối Thủ!\",\n      \"subtext\": \"Diễu hành hoành tráng tại Nairobi, gây sốc toàn cầu.\",\n      \"narration\": \"Chuyện lạ có thật! Hàng ngàn CĐV tại Nairobi biến đường",
+    "timestamp": "2026-06-05T18:07:26.434908"
+  },
+  {
+    "url": "https://vnexpress.net/vi-sao-nguoi-phap-thuong-bao-loan-sau-nhung-chien-thang-bong-da-5080921.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 2: narration quá dài (47 > 45 từ)', 'Scene 3: narration quá dài (49 > 45 từ)', 'Scene 4: narration quá dài (48 > 45 từ)', 'Scene 5: narration quá dài (47 > 45 từ)']. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+    "timestamp": "2026-06-05T18:20:33.154248"
+  },
+  {
+    "url": "https://vnexpress.net/5-doi-thanh-cong-nhat-mua-2025-2026-5080657.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 1: narration quá dài (49 > 45 từ)', 'Scene 2: narration quá dài (50 > 45 từ)', 'Scene 4: narration quá dài (48 > 45 từ)', 'Scene 5: narration quá dài (49 > 45 từ)']. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"VILLA LÀM NÊN LỊCH SỬ!\",\n      \"subtext\": \"Vô địch Cúp C2, dự C1 với chi phí âm.\",\n      \"narration\": \"Không thể tin nổi! Aston Villa đã làm nên điều kỳ diệu, giành Europa League và trở",
+    "timestamp": "2026-06-05T19:20:41.852706"
+  },
+  {
+    "url": "https://vnexpress.net/ben-white-chang-cam-tu-quan-cua-arsenal-5079944.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 5: narration quá dài (46 > 45 từ)']. Fallback: Không parse được JSON:\nTuyệt vời! Dưới đây là 5 scenes video TikTok bóng đá về Ben White, tuân thủ mọi yêu cầu của bạn:\n\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"66.5 TRIỆU USD: HỚ HÀNG?\",\n      \"subtext\": \"Hậu vệ Brighton gây tranh cãi lớn.\",",
+    "timestamp": "2026-06-05T19:21:50.933464"
+  },
+  {
+    "url": "https://vnexpress.net/5-doi-thanh-cong-nhat-mua-2025-2026-5080657.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"Villa: Vô địch Châu Âu!\",\n      \"subtext\": \"Từ vị trí thứ 6, họ trở lại đỉnh cao!\",\n      \"narration\": \"Không thể tin nổi! Aston Villa đã có một mùa giải lịch sử! Từ vị trí thứ sáu, họ không chỉ giành vé dự",
+    "timestamp": "2026-06-05T19:29:25.501830"
+  },
+  {
+    "url": "https://vnexpress.net/ben-white-chang-cam-tu-quan-cua-arsenal-5079944.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+    "timestamp": "2026-06-05T19:30:16.694440"
+  },
+  {
+    "url": "https://vnexpress.net/5-doi-thanh-cong-nhat-mua-2025-2026-5080657.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+    "timestamp": "2026-06-05T19:31:26.828760"
+  },
+  {
+    "url": "https://vnexpress.net/5-doi-thanh-cong-nhat-mua-2025-2026-5080657.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+    "timestamp": "2026-06-05T20:00:27.292670"
   }
 ]

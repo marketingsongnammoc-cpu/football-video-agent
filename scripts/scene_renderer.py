@@ -1,21 +1,19 @@
 """
-scene_renderer.py  —  Premium render engine THỂ THAO 247.
+scene_renderer.py  —  Template-based render engine THỂ THAO 247.
 
-Build frame hoàn toàn bằng PIL, không dùng template PNG (trừ end card).
+Dùng tin-nhanh-clean.png làm base, overlay text + image.
+End card (dang-ky-kenh) dùng background.png riêng.
 
-Layout cố định (1080×1920):
+Layout tin-nhanh (1080×1920):
   ┌──────────────────────────┐  y=0
-  │  LOGO        [CATEGORY]  │  Header  h=106
-  ├──────────────────────────┤  y=106
-  │                          │
-  │   Article image          │  full-width cover-crop  h=984
-  │   (full-bleed, no frame) │
-  │   ▓▓▓▓ gradient fade ▓▓▓ │
-  ├╲────────────────────────╱┤  y=1090  chamfer 22px
-  │     [  BADGE  ]          │  centered on seam
-  │  Headline text           │  Panel  h=830
-  │  ─────────────           │  accent line
-  │  Subtitle text           │
+  │  [LOGO]   [TIN NHANH]   │  Header từ template
+  ├──────────────────────────┤  y=231
+  │   Article image (frame)  │  y=231..1225  w=972 h=994  r=35
+  ├──────────────────────────┤  y=1270
+  │       [CẬP NHẬT]        │  Badge  y=1270..1376
+  │  Headline text bold      │  y=1406  fmax=66
+  │  ─────────────────       │  accent line  y≈1612
+  │  Subtitle text           │  y=1650  fmax=32
   └──────────────────────────┘  y=1920
 """
 
@@ -43,30 +41,93 @@ _FALLBACK_REG = next(
 )
 
 # ── Palette ────────────────────────────────────────────────────────────────────
-_BG    = (6,  10, 18)     # deep navy — canvas background
-_PANEL = (4,   7, 14)     # panel (slightly darker)
-_RED   = (196, 14, 42)    # THỂ THAO 247 signature red
-_GOLD  = (208, 162, 38)   # accent gold
+_BG    = (6,  10, 18)
 _WHITE = (255, 255, 255)
-_GRAY  = (172, 172, 186)  # subtitle text
+_GRAY  = (216, 216, 216)
 
-# ── Layout constants ───────────────────────────────────────────────────────────
-_HEADER_H  = 106    # header strip height
-_IMG_TOP   = _HEADER_H + 4   # 110 — small gap below header
-_IMG_BTM   = 1090            # image bottom = panel top
-_IMG_H     = _IMG_BTM - _IMG_TOP   # 980 — article image height
-_CHAMFER   = 22              # panel corner chamfer size (px)
+# ── Shared layout constants (1080×1920, tin-nhanh base) ──────────────────────
+_RED  = (196, 14, 42)
+_GOLD = (208, 162, 38)
 
-_HEADLINE_X    = 52
-_HEADLINE_W    = CANVAS_W - _HEADLINE_X * 2   # 976
-_HEADLINE_Y    = _IMG_BTM + 68                # 1158
-_HEADLINE_FMAX = 80
-_HEADLINE_FMIN = 44
-_HEADLINE_LMAX = 2
+# ── Tin-nhanh / Chuyển-nhượng coordinates ────────────────────────────────────
+_IMG_SLOT  = dict(x=44,  y=231,  w=972, h=994, radius=35)
+_CAT_BOX   = dict(x=735, y=84,   w=285, h=64,  size=34)
+_BADGE_BOX = dict(x=324, y=1270, w=424, h=106, size=34)
+_HL_AREA   = dict(x=96,  y=1406, w=888, h=165, fmax=66, fmin=42,  max_lines=2, spacing=1.08)
+_SUB_AREA  = dict(x=96,  y=1650, w=888, h=110, fmax=32, fmin=26,  max_lines=2, spacing=1.18)
 
-_SUB_FMAX = 33
-_SUB_FMIN = 19
-_SUB_LMAX = 2
+# Alias cho backward compat (composer.py dùng _TN_IMG)
+_TN_IMG = _IMG_SLOT
+
+# ── Ket-qua-tran-dau coordinates (approved 2026-06-07) ───────────────────────
+_KQ_IMG_SLOT  = dict(x=52,  y=160,  w=976, h=890, radius=22)  # panel_y=1050
+_KQ_PANEL_Y   = 1050
+_KQ_BADGE_BOX = dict(x=336, y=1080, w=408, h=74,  size=34)
+_KQ_TEAMS_Y   = 1200
+_KQ_TEAMS_H   = 55
+_KQ_SCORE_AREA = dict(x=96, y=1270, w=888, h=145, fmax=96, fmin=72)
+_KQ_HL_AREA   = dict(x=96,  y=1455, w=888, h=100, fmax=44, fmin=32,  max_lines=2, spacing=1.08)
+_KQ_SUB_AREA  = dict(x=96,  y=1585, w=888, h=100, fmax=30, fmin=24,  max_lines=2, spacing=1.18)
+_KQ_ACCENT_Y  = 1433  # between score_area bottom and headline_area top
+
+# ── Template registry ─────────────────────────────────────────────────────────
+_TEMPLATES: dict[str, dict] = {
+    "tin-nhanh": {
+        "clean":    TEMPLATE_DIR / "tin-nhanh-clean.png",
+        "category": "TIN NHANH",
+        "badge":    "CẬP NHẬT",
+    },
+    "chuyen-nhuong": {
+        "clean":    TEMPLATE_DIR / "chuyen-nhuong-clean.png",
+        "category": "CHUYỂN NHƯỢNG",
+        "badge":    "ĐÀM PHÁN",
+    },
+    "ket-qua-tran-dau": {
+        "clean":    TEMPLATE_DIR / "ket-qua-tran-dau-clean.png",
+        "category": "KẾT QUẢ",
+        "badge":    "KẾT THÚC",
+    },
+}
+
+# ── Tag → template routing ────────────────────────────────────────────────────
+_TAG_MAP: dict[str, str] = {
+    "KẾT QUẢ":       "ket-qua-tran-dau",
+    "KẾT THÚC":      "ket-qua-tran-dau",
+    "HẾT GIỜ":       "ket-qua-tran-dau",
+    "SAU TRẬN":      "ket-qua-tran-dau",
+    "CHUNG CUỘC":    "ket-qua-tran-dau",
+    "CHUYỂN NHƯỢNG": "chuyen-nhuong",
+    "CHUYÊN NHƯỢNG": "chuyen-nhuong",
+    "KÝ HỢP ĐỒNG":  "chuyen-nhuong",
+    "ĐÀM PHÁN":     "chuyen-nhuong",
+    "GIA NHẬP":      "chuyen-nhuong",
+    "RỜI CLB":       "chuyen-nhuong",
+    "THƯƠNG VỤ":    "chuyen-nhuong",
+    "BẾN ĐỖ":       "chuyen-nhuong",
+    "TIN NHANH":    "tin-nhanh",
+    "BREAKING":     "tin-nhanh",
+}
+
+_KEYWORD_MAP: list[tuple[list[str], str]] = [
+    (["tỷ số", "kết quả", " thắng ", " thua ", " hòa ", "bàn thắng",
+      "3 điểm", "bị loại", "đi tiếp", "ngược dòng", "chung cuộc"], "ket-qua-tran-dau"),
+    (["chuyển nhượng", "ký hợp đồng", "đàm phán", "gia nhập",
+      "rời clb", "thương vụ", "phí chuyển nhượng", "bến đỗ",
+      "theo đuổi", "sắp ký"], "chuyen-nhuong"),
+]
+
+
+def _select_template(tag: str, headline: str = "", subtext: str = "") -> str:
+    clean_tag = re.sub(r"[^\w\sÀ-ɏḀ-ỿ]", "", tag).strip().upper()
+    for key, tmpl in _TAG_MAP.items():
+        if key in clean_tag:
+            return tmpl
+    # Keyword fallback trong headline/subtext
+    combined = (headline + " " + subtext).lower()
+    for keywords, tmpl in _KEYWORD_MAP:
+        if any(kw in combined for kw in keywords):
+            return tmpl
+    return "tin-nhanh"
 
 
 # ── Font helpers ───────────────────────────────────────────────────────────────
@@ -87,16 +148,12 @@ def _font(size: int, bold: bool = True) -> ImageFont.FreeTypeFont:
         return ImageFont.load_default()
 
 
-def _measure(d: ImageDraw.ImageDraw, text: str, f: ImageFont.FreeTypeFont) -> tuple[int, int]:
-    b = d.textbbox((0, 0), text, font=f)
-    return b[2] - b[0], b[3] - b[1]
-
-
-def _wrap(d: ImageDraw.ImageDraw, text: str, f: ImageFont.FreeTypeFont, max_w: int) -> list[str]:
+def _wrap(draw: ImageDraw.ImageDraw, text: str,
+          f: ImageFont.FreeTypeFont, max_w: int) -> list[str]:
     words, lines, cur = text.split(), [], ""
     for w in words:
         cand = f"{cur} {w}".strip()
-        if _measure(d, cand, f)[0] <= max_w:
+        if f.getlength(cand) <= max_w:
             cur = cand
         else:
             if cur:
@@ -107,288 +164,300 @@ def _wrap(d: ImageDraw.ImageDraw, text: str, f: ImageFont.FreeTypeFont, max_w: i
     return lines or [text]
 
 
-# ── Template / badge / category defaults ──────────────────────────────────────
-
-_TAG_MAP: dict[str, str] = {
-    "CHUYỂN NHƯỢNG": "chuyen-nhuong",
-    "CHUYÊN NHƯỢNG": "chuyen-nhuong",
-    "KẾT QUẢ":       "ket-qua-tran-dau",
-    "NHẬN ĐỊNH":     "nhan-dinh-tran-dau",
-    "TRẬN ĐẤU":      "nhan-dinh-tran-dau",
-    "PHÂN TÍCH":     "phan-tich",
-    "CHIẾN THUẬT":   "phan-tich",
-    "TIN NHANH":     "tin-nhanh",
-    "BREAKING":      "tin-nhanh",
-}
-
-_DEFAULT_BADGE: dict[str, str] = {
-    "chuyen-nhuong":      "CHUYỂN NHƯỢNG",
-    "tin-nhanh":          "TIN NHANH",
-    "phan-tich":          "PHÂN TÍCH",
-    "nhan-dinh-tran-dau": "NHẬN ĐỊNH",
-    "ket-qua-tran-dau":   "KẾT QUẢ",
-    "dang-ky-kenh":       "",
-}
-
-_DEFAULT_CATEGORY: dict[str, str] = {
-    "chuyen-nhuong":      "CHUYỂN NHƯỢNG",
-    "tin-nhanh":          "TIN NHANH",
-    "phan-tich":          "PHÂN TÍCH",
-    "nhan-dinh-tran-dau": "NHẬN ĐỊNH TRẬN ĐẤU",
-    "ket-qua-tran-dau":   "KẾT QUẢ TRẬN ĐẤU",
-    "dang-ky-kenh":       "",
-}
+def _cover_crop(img: Image.Image, w: int, h: int) -> Image.Image:
+    iw, ih = img.size
+    scale  = max(w / iw, h / ih)
+    nw, nh = max(int(iw * scale), w), max(int(ih * scale), h)
+    img    = img.resize((nw, nh), Image.LANCZOS)
+    left, top = (nw - w) // 2, (nh - h) // 2
+    return img.crop((left, top, left + w, top + h))
 
 
-def _select_template(tag: str) -> str:
-    clean = re.sub(r"[^\w\sÀ-ɏḀ-ỿ]", "", tag).strip().upper()
-    for key, tmpl in _TAG_MAP.items():
-        if key in clean:
-            return tmpl
-    return "tin-nhanh"
+# ── Text drawing helpers ───────────────────────────────────────────────────────
+
+def _draw_center_text(draw: ImageDraw.ImageDraw,
+                      text: str, bx: int, by: int, bw: int, bh: int,
+                      size: int, color: tuple, bold: bool = True) -> None:
+    font = _font(size, bold)
+    tw   = font.getlength(text)
+    bb   = font.getbbox(text)
+    th   = bb[3] - bb[1]
+    tx   = int(bx + (bw - tw) / 2)
+    ty   = int(by + (bh - th) / 2) - bb[1]
+    draw.text((tx, ty), text, font=font, fill=color)
 
 
-# ── Logo (drawn programmatically) ─────────────────────────────────────────────
-
-def _draw_logo_inline(canvas: Image.Image, draw: ImageDraw.ImageDraw) -> None:
-    """Draw THỂ THAO 247 logo text at top-left of header."""
-    x0, y0 = 22, 20
-
-    # Football icon: small red circle with white inner circle
-    icon_cx, icon_cy, icon_r = x0 + 18, y0 + 32, 18
-    draw.ellipse(
-        [icon_cx - icon_r, icon_cy - icon_r, icon_cx + icon_r, icon_cy + icon_r],
-        fill=(*_RED, 255),
-    )
-    draw.ellipse(
-        [icon_cx - 7, icon_cy - 7, icon_cx + 7, icon_cy + 7],
-        fill=(*_WHITE, 200),
-    )
-
-    # "THỂ THAO" in white bold
-    f_logo = _font(27, bold=True)
-    tx = icon_cx + icon_r + 10
-    ty = y0 + 20
-    draw.text((tx, ty), "THỂ THAO", font=f_logo, fill=(*_WHITE, 255))
-
-    # "247" in red bold — right below or same line, slightly larger
-    w_tt, h_tt = _measure(draw, "THỂ THAO", f_logo)
-    f247 = _font(27, bold=True)
-    draw.text((tx, ty + h_tt + 2), "247", font=f247, fill=(*_RED, 255))
-
-
-# ── Draw primitives ───────────────────────────────────────────────────────────
-
-def _draw_header(canvas: Image.Image, draw: ImageDraw.ImageDraw, category: str) -> None:
-    """Header strip: logo left + category box right + red borders."""
-    # Thin red top stripe
-    draw.rectangle([0, 0, CANVAS_W, 3], fill=(*_RED, 255))
-
-    # Logo
-    _draw_logo_inline(canvas, draw)
-
-    # Header bottom divider
-    draw.rectangle([0, _HEADER_H - 2, CANVAS_W, _HEADER_H], fill=(*_RED, 170))
-
-    # Category box — compact, red border, right-aligned
-    fc = _font(18, bold=True)
-    cat = category.upper()[:22]
-    tw, th = _measure(draw, cat, fc)
-    px, py = 14, 9
-    bw, bh = tw + px * 2, th + py * 2
-    bx = CANVAS_W - bw - 28
-    by = (_HEADER_H - bh) // 2
-    draw.rounded_rectangle([bx, by, bx + bw, by + bh],
-                           radius=4, outline=(*_RED, 220), width=2)
-    draw.text((bx + px, by + py), cat, font=fc, fill=(*_WHITE, 255))
-
-
-def _paste_article_image(canvas: Image.Image, image_path: Path) -> None:
-    """Cover-crop image to CANVAS_W × _IMG_H, paste at _IMG_TOP. No border."""
-    try:
-        art = Image.open(image_path).convert("RGB")
-    except Exception as e:
-        print(f"  ⚠ Cannot open image: {e}")
-        return
-
-    tr = CANVAS_W / _IMG_H
-    ir = art.width / art.height
-    if ir > tr:
-        nw = int(art.height * tr)
-        left = (art.width - nw) // 2
-        art = art.crop((left, 0, left + nw, art.height))
-    else:
-        nh = int(art.width / tr)
-        top = (art.height - nh) // 2
-        art = art.crop((0, top, art.width, top + nh))
-    art = art.resize((CANVAS_W, _IMG_H), Image.Resampling.LANCZOS)
-    canvas.paste(art, (0, _IMG_TOP))
-
-
-def _apply_bottom_fade(canvas: Image.Image) -> None:
-    """Fade image bottom into panel color using numpy gradient."""
-    fade_h  = 380
-    fade_y0 = _IMG_BTM - fade_h
-
-    arr = np.zeros((fade_h, CANVAS_W, 4), dtype=np.uint8)
-    for y in range(fade_h):
-        t     = (y / fade_h) ** 1.9
-        alpha = int(255 * t)
-        arr[y, :] = (*_PANEL, alpha)
-
-    overlay = Image.fromarray(arr, "RGBA")
-    canvas.alpha_composite(overlay, (0, fade_y0))
-
-
-def _draw_panel(canvas: Image.Image, draw: ImageDraw.ImageDraw) -> None:
-    """Dark panel with chamfer corners and red border."""
-    ch = _CHAMFER
-
-    # Panel fill
-    draw.rectangle([0, _IMG_BTM, CANVAS_W, CANVAS_H], fill=(*_PANEL, 255))
-
-    # Chamfer: cut triangles at top-left and top-right using canvas bg color
-    draw.polygon([(0, _IMG_BTM), (ch, _IMG_BTM), (0, _IMG_BTM + ch)],
-                 fill=(*_BG, 255))
-    draw.polygon([(CANVAS_W, _IMG_BTM), (CANVAS_W - ch, _IMG_BTM),
-                  (CANVAS_W, _IMG_BTM + ch)],
-                 fill=(*_BG, 255))
-
-    # Red border — horizontal + two diagonal chamfer edges
-    draw.line([(ch, _IMG_BTM), (CANVAS_W - ch, _IMG_BTM)],
-              fill=(*_RED, 255), width=3)
-    draw.line([(0, _IMG_BTM + ch), (ch, _IMG_BTM)],
-              fill=(*_RED, 255), width=3)
-    draw.line([(CANVAS_W - ch, _IMG_BTM), (CANVAS_W, _IMG_BTM + ch)],
-              fill=(*_RED, 255), width=3)
-
-
-def _draw_badge(draw: ImageDraw.ImageDraw, text: str) -> None:
-    """Single red badge centered on panel seam."""
+def _draw_block_text(draw: ImageDraw.ImageDraw,
+                     text: str, x: int, y: int, w: int, h: int,
+                     fmax: int, fmin: int, color: tuple,
+                     bold: bool, max_lines: int, spacing: float) -> None:
     if not text:
         return
-    fb = _font(21, bold=True)
-    tu = text.upper()
-    tw, th = _measure(draw, tu, fb)
-    px, py = 22, 10
-    bw, bh = tw + px * 2, th + py * 2
-    bx = (CANVAS_W - bw) // 2
-    by = _IMG_BTM - bh // 2   # centered on seam
-
-    draw.rounded_rectangle([bx, by, bx + bw, by + bh],
-                           radius=6, fill=(*_RED, 255))
-    # shadow + text
-    draw.text((bx + px + 1, by + py + 1), tu, font=fb, fill=(0, 0, 0, 110))
-    draw.text((bx + px, by + py),         tu, font=fb, fill=(*_WHITE, 255))
-
-
-def _draw_text_block(
-    draw: ImageDraw.ImageDraw,
-    text: str, x: int, y: int, max_w: int,
-    fmax: int, fmin: int, max_lines: int,
-    bold: bool, color: tuple,
-) -> int:
-    """Auto-shrink font to fit max_lines. Returns y after last line."""
-    if not text:
-        return y
-    chosen_lines: list[str] = []
-    chosen_font: ImageFont.FreeTypeFont | None = None
-    for sz in range(fmax, fmin - 1, -2):
-        f  = _font(sz, bold)
-        ls = _wrap(draw, text, f, max_w)
-        if len(ls) <= max_lines:
-            chosen_lines = ls
-            chosen_font  = f
-            break
-    if not chosen_lines:
-        chosen_font  = _font(fmin, bold)
-        chosen_lines = _wrap(draw, text, chosen_font, max_w)[:max_lines]
-
-    lh    = int(chosen_font.size * 1.24)
-    cur_y = y
-    for line in chosen_lines:
-        draw.text((x + 1, cur_y + 1), line, font=chosen_font, fill=(0, 0, 0, 115))
-        draw.text((x,     cur_y),     line, font=chosen_font, fill=(*color, 255))
-        cur_y += lh
-    return cur_y
+    for size in range(fmax, fmin - 1, -1):
+        font  = _font(size, bold)
+        lines = _wrap(draw, text, font, w)[:max_lines]
+        lh    = int(size * spacing)
+        total = lh * (len(lines) - 1) + size
+        if total <= h:
+            ty = y
+            for line in lines:
+                draw.text((x, ty), line, font=font, fill=color)
+                ty += lh
+            return
+    font  = _font(fmin, bold)
+    lines = _wrap(draw, text, font, w)[:max_lines]
+    ty    = y
+    for line in lines:
+        draw.text((x, ty), line, font=font, fill=color)
+        ty += int(fmin * spacing)
 
 
-def _draw_accent_line(draw: ImageDraw.ImageDraw, y: int) -> None:
-    """Short red + gold decorative line under headline."""
-    draw.rectangle([_HEADLINE_X,       y, _HEADLINE_X + 168, y + 3],
-                   fill=(*_RED, 255))
-    draw.rectangle([_HEADLINE_X + 174, y, _HEADLINE_X + 220, y + 3],
-                   fill=(*_GOLD, 255))
+# ── Generic template renderer ─────────────────────────────────────────────────
 
-
-# ── End card (static) ─────────────────────────────────────────────────────────
-
-def _render_end_card(overlay_out: Path, bg_out: Path) -> dict:
-    p = TEMPLATE_DIR / "dang-ky-kenh" / "background.png"
-    if p.exists():
-        img = Image.open(p).convert("RGB")
-        img = img.resize((CANVAS_W, CANVAS_H), Image.Resampling.LANCZOS)
-    else:
-        img = Image.new("RGB", (CANVAS_W, CANVAS_H), _BG)
-
-    for out in (overlay_out, bg_out):
-        out.parent.mkdir(parents=True, exist_ok=True)
-    img.save(overlay_out, "PNG")
-    img.save(bg_out, "JPEG", quality=85)
-    return {"template": "dang-ky-kenh", "aspect": 1.0,
-            "image_size": (0, 0), "bg_size": (CANVAS_W, CANVAS_H)}
-
-
-# ── Premium frame builder ──────────────────────────────────────────────────────
-
-def _build_frame(scene: dict, image_path: Path | None) -> Image.Image:
-    canvas = Image.new("RGBA", (CANVAS_W, CANVAS_H), (*_BG, 255))
-    draw   = ImageDraw.Draw(canvas)
-
-    tag      = scene.get("tag", "TIN NHANH")
-    tmpl     = _select_template(tag)
-    category = scene.get("category") or _DEFAULT_CATEGORY.get(tmpl, "THỂ THAO 247")
-    badge    = scene.get("badge")    or _DEFAULT_BADGE.get(tmpl, "TIN NHANH")
+def _render_tin_nhanh(scene: dict, image_path: Path | None,
+                      overlay_out: Path, img_raw_out: Path) -> None:
+    """Render content frame dùng template PNG.
+    overlay_out  = template + text, image slot trong suốt (RGBA PNG)
+    img_raw_out  = article image crop to slot size (RGB PNG)
+    """
+    tag      = scene.get("tag", "")
     headline = scene.get("headline", "")
     subtext  = scene.get("subtext",  "")
+    tmpl_key = _select_template(tag, headline, subtext)
 
-    # 1. Article image (full-width, no border, no frame)
+    # Route ket-qua to dedicated renderer
+    if tmpl_key == "ket-qua-tran-dau":
+        _render_ket_qua(scene, image_path, overlay_out, img_raw_out)
+        return
+
+    tmpl     = _TEMPLATES.get(tmpl_key, _TEMPLATES["tin-nhanh"])
+    clean_path = tmpl["clean"]
+    if not clean_path.exists():
+        raise FileNotFoundError(f"Template không tìm thấy: {clean_path}")
+
+    category = (scene.get("category") or tmpl["category"]).upper()
+    badge    = (scene.get("badge")    or tmpl["badge"]).upper()
+
+    canvas = Image.open(clean_path).convert("RGBA")
+    canvas = canvas.resize((CANVAS_W, CANVAS_H), Image.LANCZOS)
+
+    # Clear image slot → trong suốt (rounded corners giữ nguyên từ template)
+    iw, ih = _IMG_SLOT["w"], _IMG_SLOT["h"]
+    ix, iy = _IMG_SLOT["x"], _IMG_SLOT["y"]
+    slot_mask = Image.new("L", (iw, ih), 0)
+    ImageDraw.Draw(slot_mask).rounded_rectangle(
+        [0, 0, iw - 1, ih - 1], radius=_IMG_SLOT["radius"], fill=255
+    )
+    canvas.paste(Image.new("RGBA", (iw, ih), (0, 0, 0, 0)), (ix, iy), slot_mask)
+
+    draw = ImageDraw.Draw(canvas)
+    _draw_center_text(draw, category,
+                      _CAT_BOX["x"], _CAT_BOX["y"],
+                      _CAT_BOX["w"], _CAT_BOX["h"],
+                      _CAT_BOX["size"], _WHITE)
+    _draw_center_text(draw, badge,
+                      _BADGE_BOX["x"], _BADGE_BOX["y"],
+                      _BADGE_BOX["w"], _BADGE_BOX["h"],
+                      _BADGE_BOX["size"], _WHITE)
+    _draw_block_text(draw, headline,
+                     _HL_AREA["x"], _HL_AREA["y"], _HL_AREA["w"], _HL_AREA["h"],
+                     _HL_AREA["fmax"], _HL_AREA["fmin"], _WHITE, True,
+                     _HL_AREA["max_lines"], _HL_AREA["spacing"])
+    _draw_block_text(draw, subtext,
+                     _SUB_AREA["x"], _SUB_AREA["y"], _SUB_AREA["w"], _SUB_AREA["h"],
+                     _SUB_AREA["fmax"], _SUB_AREA["fmin"], _GRAY, False,
+                     _SUB_AREA["max_lines"], _SUB_AREA["spacing"])
+
+    overlay_out.parent.mkdir(parents=True, exist_ok=True)
+    canvas.save(str(overlay_out), "PNG")
+
+    # Lưu article image raw (cho composer zoom riêng)
     if image_path and image_path.exists():
-        _paste_article_image(canvas, image_path)
+        art = _cover_crop(Image.open(image_path).convert("RGB"), iw, ih)
+        img_raw_out.parent.mkdir(parents=True, exist_ok=True)
+        art.save(str(img_raw_out), "PNG")
 
-    # 2. Fade image bottom into panel
-    _apply_bottom_fade(canvas)
 
-    # 3. Panel
-    _draw_panel(canvas, draw)
+# ── Ket-qua helpers ───────────────────────────────────────────────────────────
 
-    # 4. Badge — centered on panel seam
-    _draw_badge(draw, badge)
+def _draw_centered_block(draw: ImageDraw.ImageDraw,
+                          text: str, x: int, y: int, w: int, h: int,
+                          fmax: int, fmin: int, color: tuple,
+                          bold: bool, max_lines: int, spacing: float) -> None:
+    """Auto-shrink block, center each line horizontally."""
+    if not text:
+        return
+    for size in range(fmax, fmin - 1, -1):
+        font  = _font(size, bold)
+        lines = _wrap(draw, text, font, w)[:max_lines]
+        lh    = int(size * spacing)
+        total = lh * (len(lines) - 1) + size
+        if total <= h:
+            ty = y
+            for line in lines:
+                tw = font.getlength(line)
+                tx = x + int((w - tw) / 2)
+                draw.text((tx, ty), line, font=font, fill=color)
+                ty += lh
+            return
+    font  = _font(fmin, bold)
+    lines = _wrap(draw, text, font, w)[:max_lines]
+    ty    = y
+    for line in lines:
+        tw = font.getlength(line)
+        tx = x + int((w - tw) / 2)
+        draw.text((tx, ty), line, font=font, fill=color)
+        ty += int(fmin * spacing)
 
-    # 5. Headline
-    hl_bottom = _draw_text_block(
-        draw, headline,
-        x=_HEADLINE_X, y=_HEADLINE_Y, max_w=_HEADLINE_W,
-        fmax=_HEADLINE_FMAX, fmin=_HEADLINE_FMIN, max_lines=_HEADLINE_LMAX,
-        bold=True, color=_WHITE,
+
+# ── Ket-qua template renderer ─────────────────────────────────────────────────
+
+def _render_ket_qua(scene: dict, image_path: Path | None,
+                    overlay_out: Path, img_raw_out: Path) -> None:
+    """Render ket-qua-tran-dau (layout approved 2026-06-07).
+
+    image_slot : x=52,  y=160,  w=976, h=890, radius=22  → panel_y=1050
+    panel      : y=1050-1920, dark (4,6,18) + premium decorations
+    badge_pill : x=336, y=1080, w=408, h=74   (red, centered)
+    teams_area : x=96,  y=1200, w=888, h=55
+    score_area : x=96,  y=1270, w=888, h=145, fmax=96
+    accent_line: y=1433
+    headline   : x=96,  y=1455, w=888, h=100, fmax=44
+    subtitle   : x=96,  y=1585, w=888, h=100, fmax=30
+    """
+    import json as _json
+
+    base_path = TEMPLATE_DIR / "ket-qua-tran-dau-clean.png"
+    if not base_path.exists():
+        base_path = TEMPLATE_DIR / "tin-nhanh-clean.png"
+    if not base_path.exists():
+        raise FileNotFoundError(f"Template: {base_path}")
+
+    category  = (scene.get("category")  or "KẾT QUẢ").upper()
+    badge     = (scene.get("badge")     or "KẾT THÚC").upper()
+    home_team = scene.get("home_team", "")
+    away_team = scene.get("away_team", "")
+    score     = scene.get("score", "")
+    headline  = scene.get("headline", "")
+    subtext   = scene.get("subtext",  "")
+
+    _KQ_IX, _KQ_IY = _KQ_IMG_SLOT["x"], _KQ_IMG_SLOT["y"]   # 52, 160
+    _KQ_IW, _KQ_IH = _KQ_IMG_SLOT["w"], _KQ_IMG_SLOT["h"]   # 976, 890
+    _KQ_IR          = _KQ_IMG_SLOT["radius"]                  # 22
+    _PANEL_Y        = _KQ_PANEL_Y                             # 1050
+
+    _BDX, _BDY = _KQ_BADGE_BOX["x"], _KQ_BADGE_BOX["y"]     # 336, 1080
+    _BDW, _BDH = _KQ_BADGE_BOX["w"], _KQ_BADGE_BOX["h"]     # 408, 74
+
+    canvas = Image.open(base_path).convert("RGBA")
+    canvas = canvas.resize((CANVAS_W, CANVAS_H), Image.LANCZOS)
+    draw   = ImageDraw.Draw(canvas)
+
+    # 1. Panel dark phủ từ y=1050 xuống cuối
+    draw.rectangle([0, _PANEL_Y, CANVAS_W, CANVAS_H], fill=(4, 6, 18, 255))
+
+    # 2. Red seam (4px viền đỏ đỉnh panel)
+    draw.rectangle([0, _PANEL_Y, CANVAS_W, _PANEL_Y + 4], fill=(*_RED, 255))
+
+    # 3. Badge pill đỏ centered
+    draw.rounded_rectangle(
+        [_BDX, _BDY, _BDX + _BDW, _BDY + _BDH],
+        radius=10, fill=(*_RED, 255),
     )
 
-    # 6. Accent line
-    accent_y = hl_bottom + 22
-    _draw_accent_line(draw, accent_y)
+    # 4. Red-gold accent line
+    draw.rectangle([96, _KQ_ACCENT_Y, 96 + 168, _KQ_ACCENT_Y + 3], fill=(*_RED, 255))
+    draw.rectangle([96 + 174, _KQ_ACCENT_Y, 96 + 220, _KQ_ACCENT_Y + 3], fill=(*_GOLD, 255))
 
-    # 7. Subtitle
-    _draw_text_block(
-        draw, subtext,
-        x=_HEADLINE_X, y=accent_y + 28, max_w=_HEADLINE_W,
-        fmax=_SUB_FMAX, fmin=_SUB_FMIN, max_lines=_SUB_LMAX,
-        bold=False, color=_GRAY,
+    # 5. Clear image slot → transparent
+    slot_mask = Image.new("L", (_KQ_IW, _KQ_IH), 0)
+    ImageDraw.Draw(slot_mask).rounded_rectangle(
+        [0, 0, _KQ_IW - 1, _KQ_IH - 1], radius=_KQ_IR, fill=255
+    )
+    canvas.paste(Image.new("RGBA", (_KQ_IW, _KQ_IH), (0, 0, 0, 0)),
+                 (_KQ_IX, _KQ_IY), slot_mask)
+
+    # 6. Gradient tối ở đáy slot (blend ảnh → panel) — vẽ lên overlay transparent
+    GRAD_H = 220
+    grad = np.zeros((_KQ_IH, _KQ_IW, 4), dtype=np.uint8)
+    for off in range(GRAD_H):
+        row = _KQ_IH - GRAD_H + off
+        a   = int(200 * off / GRAD_H)
+        grad[row, :] = [4, 6, 18, a]
+    canvas.paste(Image.fromarray(grad, "RGBA"), (_KQ_IX, _KQ_IY),
+                 Image.fromarray(grad, "RGBA"))
+
+    draw = ImageDraw.Draw(canvas)
+
+    # 7. Category text (top-right box từ template header)
+    _draw_center_text(draw, category,
+                      _CAT_BOX["x"], _CAT_BOX["y"],
+                      _CAT_BOX["w"], _CAT_BOX["h"],
+                      _CAT_BOX["size"], _WHITE)
+
+    # 8. Badge text
+    _draw_center_text(draw, badge, _BDX, _BDY, _BDW, _BDH, 34, _WHITE)
+
+    # 9. Teams (1 dòng, centered, gray)
+    if home_team and away_team:
+        teams_text = f"{home_team}  vs  {away_team}"
+        tsz = _KQ_SCORE_AREA["fmax"] // 3  # start at 32
+        for sz in range(32, 20, -1):
+            if _font(sz, bold=False).getlength(teams_text) <= 888:
+                tsz = sz; break
+        _draw_center_text(draw, teams_text, 96, _KQ_TEAMS_Y, 888, _KQ_TEAMS_H,
+                          tsz, _GRAY, bold=False)
+
+    # 10. Score (trọng tâm, lớn nhất)
+    if score:
+        ssz = _KQ_SCORE_AREA["fmax"]
+        for sz in range(_KQ_SCORE_AREA["fmax"], _KQ_SCORE_AREA["fmin"] - 1, -4):
+            if _font(sz, bold=True).getlength(score) <= 888:
+                ssz = sz; break
+        _draw_center_text(draw, score,
+                          _KQ_SCORE_AREA["x"], _KQ_SCORE_AREA["y"],
+                          _KQ_SCORE_AREA["w"], _KQ_SCORE_AREA["h"],
+                          ssz, _WHITE, bold=True)
+
+    # 11. Headline (centered block)
+    _draw_centered_block(draw, headline,
+                          _KQ_HL_AREA["x"], _KQ_HL_AREA["y"],
+                          _KQ_HL_AREA["w"], _KQ_HL_AREA["h"],
+                          _KQ_HL_AREA["fmax"], _KQ_HL_AREA["fmin"],
+                          _WHITE, True, _KQ_HL_AREA["max_lines"], _KQ_HL_AREA["spacing"])
+
+    # 12. Subtitle (centered block)
+    _draw_centered_block(draw, subtext,
+                          _KQ_SUB_AREA["x"], _KQ_SUB_AREA["y"],
+                          _KQ_SUB_AREA["w"], _KQ_SUB_AREA["h"],
+                          _KQ_SUB_AREA["fmax"], _KQ_SUB_AREA["fmin"],
+                          _GRAY, False, _KQ_SUB_AREA["max_lines"], _KQ_SUB_AREA["spacing"])
+
+    overlay_out.parent.mkdir(parents=True, exist_ok=True)
+    canvas.save(str(overlay_out), "PNG")
+
+    # Sidecar JSON (composer cần slot coords cho ffmpeg zoompan)
+    sidecar = overlay_out.parent / overlay_out.name.replace("overlay_", "img_slot_").replace(".png", ".json")
+    sidecar.write_text(
+        _json.dumps({"x": _KQ_IX, "y": _KQ_IY, "w": _KQ_IW, "h": _KQ_IH}),
+        encoding="utf-8",
     )
 
-    # 8. Header drawn last — always on top of image
-    _draw_header(canvas, draw, category)
+    # Article image raw tại kích thước slot ket-qua
+    if image_path and image_path.exists():
+        art = _cover_crop(Image.open(image_path).convert("RGB"), _KQ_IW, _KQ_IH)
+        img_raw_out.parent.mkdir(parents=True, exist_ok=True)
+        art.save(str(img_raw_out), "PNG")
 
-    return canvas
+
+# ── End card ──────────────────────────────────────────────────────────────────
+
+def render_end_card_frame(out: Path) -> None:
+    p = TEMPLATE_DIR / "dang-ky-kenh" / "background.png"
+    img = Image.open(p).convert("RGB") if p.exists() else Image.new("RGB", (CANVAS_W, CANVAS_H), _BG)
+    img = img.resize((CANVAS_W, CANVAS_H), Image.LANCZOS)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    img.save(str(out), "PNG")
 
 
 # ── Public API ────────────────────────────────────────────────────────────────
@@ -401,27 +470,12 @@ def render_scene(
     scene_index: int = 0,
     total_scenes: int = 4,
 ) -> dict:
-    if scene_index == total_scenes - 1:
-        return _render_end_card(overlay_output, bg_output)
-
-    canvas = _build_frame(scene, image_path)
-
-    img_orig = None
-    if image_path and image_path.exists():
-        try:
-            img_orig = Image.open(image_path)
-        except Exception:
-            pass
-
-    overlay_output.parent.mkdir(parents=True, exist_ok=True)
-    bg_output.parent.mkdir(parents=True, exist_ok=True)
-    canvas.convert("RGB").save(overlay_output, "PNG", optimize=True)
-    canvas.convert("RGB").save(bg_output,      "JPEG", quality=85)
-
+    img_raw_out = overlay_output.parent / overlay_output.name.replace("overlay_", "img_raw_")
+    _render_tin_nhanh(scene, image_path, overlay_output, img_raw_out)
+    tmpl_key = _select_template(scene.get("tag", ""), scene.get("headline", ""), scene.get("subtext", ""))
     return {
-        "template":   tmpl_name if (tmpl_name := _select_template(scene.get("tag", ""))) else "premium",
-        "aspect":     (img_orig.width / img_orig.height) if img_orig else 1.0,
-        "image_size": img_orig.size if img_orig else (0, 0),
+        "template":   tmpl_key,
+        "img_raw":    str(img_raw_out) if img_raw_out.exists() else None,
         "bg_size":    (CANVAS_W, CANVAS_H),
     }
 
@@ -439,16 +493,14 @@ def render_all_scenes(
                 image_path = cand
                 break
 
-        bg_out = frames_dir / f"bg_{scene_id}.jpg"
-        ov_out = frames_dir / f"overlay_{scene_id}.png"
-        meta   = render_scene(
-            scene, image_path, bg_out, ov_out,
-            scene_index=idx, total_scenes=len(scenes),
-        )
-        meta["scene_id"] = scene_id
+        ov_out      = frames_dir / f"overlay_{scene_id}.png"
+        img_raw_out = frames_dir / f"img_raw_{scene_id}.png"
+        _render_tin_nhanh(scene, image_path, ov_out, img_raw_out)
+        meta = {
+            "scene_id": scene_id,
+            "template": "tin-nhanh",
+            "has_img":  img_raw_out.exists(),
+        }
         results.append(meta)
-        print(
-            f"  ✓ scene {scene_id} → {CANVAS_W}×{CANVAS_H}"
-            f"  template={meta['template']}  aspect={meta['aspect']:.2f}"
-        )
+        print(f"  ✓ scene {scene_id}  template=tin-nhanh  img={'✓' if meta['has_img'] else '✗'}")
     return results

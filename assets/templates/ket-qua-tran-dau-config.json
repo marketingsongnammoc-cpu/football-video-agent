@@ -1,0 +1,45 @@
+{
+  "template_name": "ket-qua-tran-dau",
+  "canvas": { "width": 1080, "height": 1920 },
+  "image_slot": {
+    "x": 52, "y": 160, "w": 976, "h": 890, "radius": 22, "fit": "cover"
+  },
+  "category_box": {
+    "x": 735, "y": 50, "w": 285, "h": 64,
+    "font_size_max": 30, "font_size_min": 26,
+    "align": "center", "valign": "middle",
+    "uppercase": true, "color": [255,255,255], "font_weight": "bold"
+  },
+  "badge_box": {
+    "x": 336, "y": 1080, "w": 408, "h": 74,
+    "font_size_max": 34, "font_size_min": 30,
+    "align": "center", "valign": "middle",
+    "uppercase": true, "color": [255,255,255], "font_weight": "bold"
+  },
+  "teams_area": {
+    "x": 96, "y": 1200, "w": 888, "h": 55,
+    "font_size_max": 32, "font_size_min": 24,
+    "align": "center", "valign": "middle",
+    "uppercase": false, "color": [217,217,217], "font_weight": "medium"
+  },
+  "score_area": {
+    "x": 96, "y": 1270, "w": 888, "h": 145,
+    "font_size_max": 96, "font_size_min": 72,
+    "align": "center", "valign": "middle",
+    "uppercase": false, "color": [255,255,255], "font_weight": "bold"
+  },
+  "headline_area": {
+    "x": 96, "y": 1455, "w": 888, "h": 100,
+    "font_size_max": 44, "font_size_min": 32,
+    "align": "center", "valign": "middle",
+    "uppercase": false, "color": [255,255,255], "font_weight": "bold",
+    "max_lines": 2, "line_spacing": 1.08
+  },
+  "subtitle_area": {
+    "x": 96, "y": 1585, "w": 888, "h": 100,
+    "font_size_max": 30, "font_size_min": 24,
+    "align": "center", "valign": "middle",
+    "uppercase": false, "color": [216,216,216], "font_weight": "regular",
+    "max_lines": 2, "line_spacing": 1.16
+  }
+}

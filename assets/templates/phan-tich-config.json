@@ -1,0 +1,106 @@
+{
+  "canvas": {
+    "width": 1080,
+    "height": 1920
+  },
+  "source": "phan-tich.png",
+  "image_slot": {
+    "x": 178,
+    "y": 280,
+    "w": 720,
+    "h": 730,
+    "radius": 14,
+    "overlay_opacity": 30
+  },
+  "panel_y": 1100,
+  "text_zones": {
+    "category": {
+      "x": 514,
+      "y": 31,
+      "w": 562,
+      "h": 126,
+      "clear_fill": [
+        8,
+        8,
+        22
+      ],
+      "font_size_max": 22,
+      "font_size_min": 14,
+      "bold": true,
+      "color": [
+        255,
+        255,
+        255
+      ],
+      "align": "right",
+      "uppercase": true,
+      "max_lines": 1
+    },
+    "badge": {
+      "x": 90,
+      "y": 1150,
+      "w": 284,
+      "h": 54,
+      "clear_fill": [
+        184,
+        15,
+        22
+      ],
+      "font_size_max": 22,
+      "font_size_min": 14,
+      "bold": true,
+      "color": [
+        255,
+        255,
+        255
+      ],
+      "align": "center",
+      "uppercase": true,
+      "max_lines": 1
+    },
+    "headline": {
+      "x": 88,
+      "y": 1240,
+      "w": 904,
+      "h": 195,
+      "clear_fill": [
+        4,
+        6,
+        18
+      ],
+      "font_size_max": 72,
+      "font_size_min": 36,
+      "bold": true,
+      "color": [
+        255,
+        255,
+        255
+      ],
+      "align": "left",
+      "uppercase": false,
+      "max_lines": 2
+    },
+    "subtitle": {
+      "x": 88,
+      "y": 1455,
+      "w": 904,
+      "h": 120,
+      "clear_fill": [
+        4,
+        6,
+        18
+      ],
+      "font_size_max": 34,
+      "font_size_min": 18,
+      "bold": false,
+      "color": [
+        200,
+        200,
+        205
+      ],
+      "align": "left",
+      "uppercase": false,
+      "max_lines": 2
+    }
+  }
+}

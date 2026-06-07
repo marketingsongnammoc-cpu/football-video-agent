@@ -1,0 +1,75 @@
+{
+  "template": "chuyen-nhuong",
+  "display_name": "Chuyen Nhuong",
+  "canvas": {
+    "width": 1080,
+    "height": 1920
+  },
+  "source_clean": "chuyen-nhuong-clean.png",
+  "category_default": "CHUYEN NHUONG",
+  "badge_default": "DAM PHAN",
+  "badge_options": [
+    "TIN MOI",
+    "DAM PHAN",
+    "SAP KY",
+    "CHINH THUC",
+    "THEO DOI"
+  ],
+  "category_box": {
+    "x": 735,
+    "y": 84,
+    "w": 285,
+    "h": 64,
+    "font_size": 34
+  },
+  "image_slot": {
+    "x": 44,
+    "y": 231,
+    "w": 972,
+    "h": 994,
+    "radius": 35
+  },
+  "badge_box": {
+    "x": 324,
+    "y": 1270,
+    "w": 424,
+    "h": 106,
+    "font_size": 34
+  },
+  "headline": {
+    "x": 96,
+    "y": 1406,
+    "w": 888,
+    "h": 165,
+    "fmax": 66,
+    "fmin": 42,
+    "max_lines": 2,
+    "spacing": 1.08
+  },
+  "subtitle": {
+    "x": 96,
+    "y": 1650,
+    "w": 888,
+    "h": 110,
+    "fmax": 32,
+    "fmin": 26,
+    "max_lines": 2,
+    "spacing": 1.18
+  },
+  "keywords": [
+    "chuyen nhuong",
+    "ky hop dong",
+    "dam phan",
+    "gia nhap",
+    "roi CLB",
+    "muc tieu",
+    "thuong vu",
+    "phi chuyen nhuong",
+    "dai dien",
+    "tin don",
+    "ben do",
+    "theo duoi",
+    "sap ky",
+    "chinh thuc"
+  ]
+}
