@@ -2924,5 +2924,68 @@
     "reason": "script_gen_failed",
     "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 1: subtext quá nhiều từ (17 > 16)', 'Scene 2: subtext quá nhiều từ (17 > 16)', 'Scene 4: subtext quá nhiều từ (19 > 16)']. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"Perez: \\\"Tôi không cần tiền!\\\"\",\n      \"subtext\": \"Chỉ cần siêu sao, chiến thắng!\",\n      \"narration\": \"Florentino Perez, chủ tịch Real Madrid, gây sốc khi tuyên bố bầu cử sớm. Ông khẳng định không cần tiền, chỉ mang",
     "timestamp": "2026-06-07T22:47:37.093059"
+  },
+  {
+    "url": "https://vnexpress.net/hugo-almeida-ronaldo-khong-con-thanh-thoat-nhung-se-tao-khac-biet-5083006.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"Ronaldo hết thời? KHÔNG BAO GIỜ!\",\n      \"subtext\": \"Tuổi tác chỉ là con số với CR7.\",\n      \"narration\": \"Hugo Almeida khẳng định tuổi tác không còn là rào cản! Ronaldo vẫn chăm sóc bản thân cực tốt, phong độ đỉnh",
+    "timestamp": "2026-06-08T23:48:48.515884"
+  },
+  {
+    "url": "https://vnexpress.net/khong-duoc-du-world-cup-tien-ve-real-sang-harvard-hoc-kinh-doanh-5083010.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+    "timestamp": "2026-06-08T23:49:25.378641"
+  },
+  {
+    "url": "https://vnexpress.net/vi-the-cua-mourinho-khac-gi-so-voi-thoi-ky-dau-dan-real-5083396.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"Mourinho Trở Lại Real!\",\n      \"subtext\": \"Người đặc biệt tái hợp Bernabeu sau 11 năm!\",\n      \"narration\": \"Mourinho, người từng ở đỉnh cao sự nghiệp năm 2010, vừa giúp Inter ăn ba lịch sử, nay trở lại Real Madrid! Khi ấy, ông là niềm hy vọng duy nhất phá vỡ đế chế Barca của Pep Guardiola. Liệu lịch sử có lặp lại?\",\n      \"tag\": \"⚡ BREAKING\"\n    },\n    {\n      \"headline\": \"Kỷ Nguyên Vàng Real Madrid\",\n      \"subtext\": \"La Liga kỷ lục, nhưng Champ",
+    "timestamp": "2026-06-08T23:49:53.003171"
+  },
+  {
+    "url": "https://vnexpress.net/thai-lan-giup-viet-nam-rong-cua-vao-ban-ket-u19-dong-nam-a-5083397.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+    "timestamp": "2026-06-08T23:50:21.331262"
+  },
+  {
+    "url": "https://vnexpress.net/hlv-shin-tae-yong-tai-xuat-o-indonesia-5083309.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+    "timestamp": "2026-06-08T23:50:42.560857"
+  },
+  {
+    "url": "https://vnexpress.net/thai-lan-malaysia-co-the-dinh-doat-suat-di-tiep-cua-u19-viet-nam-5083202.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 1: narration quá dài (47 > 45 từ)', 'Scene 2: narration quá dài (49 > 45 từ)', 'Scene 3: narration quá dài (47 > 45 từ)', 'Scene 4: narration quá dài (54 > 45 từ)']. Fallback: Không parse được JSON:\nDưới đây là 4 scenes video TikTok bóng đá theo yêu cầu của bạn:\n\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"U19 Việt Nam: Nguy Kịch!\",\n      \"subtext\": \"Suất bán kết phụ thuộc vào đối thủ!\",\n      \"narration\": \"Thất bại trước Indonesia khiến U19 Việt Nam mất quyền tự quyết! Giờ đây, số phận của chúng ta nằm trong tay Thái Lan, Malaysia, Campuchia và Australia. Một kịch bản hòa có thể khiến thầy trò HLV Ikeuchi về nước sớm! Cực kỳ căng thẳng!\",\n      \"tag\": \"⚡ BREAKING\"\n    },\n    {\n      \"",
+    "timestamp": "2026-06-08T23:51:14.983419"
+  },
+  {
+    "url": "https://vnexpress.net/perez-thang-ap-dao-trong-cuoc-bau-cu-chu-tich-real-5083081.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 4: narration quá dài (47 > 45 từ)']. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"Perez Thắng Áp Đảo!\",\n      \"subtext\": \"Vua Real Madrid trở lại, nhiệm kỳ thứ 8!\",\n      \"narration\": \"Kịch tính đến phút chót! Florentino Perez đã chính thức tái đắc cử Chủ tịch Real Madrid với chiến thắng áp đảo. Một lần nữa, ông khẳng định quyền lực tuyệt đối tại đội bóng Hoàng gia. Cùng xem chi tiết!\",\n      \"tag\": \"⚡ BREAKING\"\n    },\n    {\n      \"headline\": \"65% Phiếu Thuận!\",\n      \"subtext\": \"Perez lập kỷ lục, 23 năm quyền lực!\",\n      \"nar",
+    "timestamp": "2026-06-08T23:52:13.180369"
+  },
+  {
+    "url": "https://vnexpress.net/eriksen-lai-do-guc-tren-san-5083014.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+    "timestamp": "2026-06-08T23:52:31.848525"
+  },
+  {
+    "url": "https://vnexpress.net/perez-toi-khong-can-tien-chi-mang-ve-cac-sieu-sao-va-chien-thang-5082746.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"Perez: \\\"Tôi không cần tiền!\\\"\",\n      \"subtext\": \"Chỉ mang về siêu sao, chiến thắng cho Real.\",\n      \"narration\": \"Florentino Perez gây sốc! Ông tuyên bố bầu cử sớm, dù nhiệm kỳ còn dài. Mục đích? Vạch trần những kẻ âm mưu chống lại Real Madrid. Cuộc chiến quyền lực khốc liệt nhất lịch sử CLB đã bắt đầu!\",\n      \"tag\": \"⚡ BREAKING\"\n    },\n    {\n      \"headline\": \"Đối",
+    "timestamp": "2026-06-08T23:52:55.140311"
   }
 ]
