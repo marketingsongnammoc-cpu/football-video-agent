@@ -2987,5 +2987,61 @@
     "reason": "script_gen_failed",
     "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"Perez: \\\"Tôi không cần tiền!\\\"\",\n      \"subtext\": \"Chỉ mang về siêu sao, chiến thắng cho Real.\",\n      \"narration\": \"Florentino Perez gây sốc! Ông tuyên bố bầu cử sớm, dù nhiệm kỳ còn dài. Mục đích? Vạch trần những kẻ âm mưu chống lại Real Madrid. Cuộc chiến quyền lực khốc liệt nhất lịch sử CLB đã bắt đầu!\",\n      \"tag\": \"⚡ BREAKING\"\n    },\n    {\n      \"headline\": \"Đối",
     "timestamp": "2026-06-08T23:52:55.140311"
+  },
+  {
+    "url": "https://vnexpress.net/yamal-toi-khong-gianh-qua-bong-vang-2025-lai-la-chuyen-tot-5083642.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+    "timestamp": "2026-06-11T00:04:25.969587"
+  },
+  {
+    "url": "https://vnexpress.net/khong-duoc-du-world-cup-tien-ve-real-sang-harvard-hoc-kinh-doanh-5083010.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+    "timestamp": "2026-06-11T00:04:54.540092"
+  },
+  {
+    "url": "https://vnexpress.net/hlv-kim-sang-sik-bi-phat-hien-khi-di-do-tham-indonesia-5083946.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+    "timestamp": "2026-06-11T00:05:09.497415"
+  },
+  {
+    "url": "https://vnexpress.net/real-bi-atletico-tu-choi-khi-hoi-mua-julian-alvarez-5083870.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 3: subtext quá nhiều từ (17 > 16)', 'Scene 3: narration quá dài (48 > 45 từ)']. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"REAL SỐC! BỊ TỪ CHỐI!\",\n      \"subtext\": \"150 triệu euro cho Alvarez, Atletico nói KHÔNG!\",\n      \"narration\": \"Một cú sốc lớn trên thị trường chuyển nhượng! Real Madrid đã chính thức gửi lời đề nghị khổng lồ 150 triệu euro cho Julian Alvarez, nhưng Atletico Madrid đã thẳng thừng từ chối! Đây là động thái chưa từng có tiền lệ!\",\n      \"tag\": \"⚡ BREAKING\"\n    },\n    {\n      \"headline\": \"REAL CÔNG KHAI THƯƠNG V",
+    "timestamp": "2026-06-11T00:05:47.869062"
+  },
+  {
+    "url": "https://vnexpress.net/viet-nam-het-cua-vao-ban-ket-u19-dong-nam-a-5083821.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+    "timestamp": "2026-06-11T00:06:20.336324"
+  },
+  {
+    "url": "https://vnexpress.net/ha-noi-fc-ky-niem-20-thanh-lap-5083623.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+    "timestamp": "2026-06-11T00:06:35.223523"
+  },
+  {
+    "url": "https://vnexpress.net/mourinho-bat-dau-lam-viec-o-real-5083785.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 3: narration quá dài (49 > 45 từ)', 'Scene 4: narration quá dài (53 > 45 từ)']. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+    "timestamp": "2026-06-11T00:07:16.866520"
+  },
+  {
+    "url": "https://vnexpress.net/vi-the-cua-mourinho-khac-gi-so-voi-thoi-ky-dau-dan-real-5083396.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+    "timestamp": "2026-06-11T00:07:32.253668"
   }
 ]
