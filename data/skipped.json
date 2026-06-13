@@ -3043,5 +3043,61 @@
     "reason": "script_gen_failed",
     "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
     "timestamp": "2026-06-11T00:07:32.253668"
+  },
+  {
+    "url": "https://vnexpress.net/tuong-quan-messi-ronaldo-tai-world-cup-5084537.html",
+    "source": "VnExpress",
+    "reason": "body_too_short",
+    "error": "",
+    "timestamp": "2026-06-13T22:47:00.160991"
+  },
+  {
+    "url": "https://vnexpress.net/yamal-toi-khong-gianh-qua-bong-vang-2025-lai-la-chuyen-tot-5083642.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 3: narration quá dài (47 > 45 từ)', 'Scene 4: narration quá dài (47 > 45 từ)']. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"Yamal: Mất QBV 2025 là TỐT!\",\n      \"subtext\": \"Tiết lộ lý do gây sốc, không ai ngờ tới.\",\n      \"narration\": \"Lamine Yamal gây bất ngờ lớn khi tuyên bố việc không giành Quả Bóng Vàng 2025 lại là điều tốt cho anh. Cầu thủ trẻ Barca chia sẻ thẳng thắn về đêm gala định mệnh và những suy nghĩ thật sự của mình. Một góc nhìn đầy trưởng thành!\",\n      \"tag\": \"👤 NGÔI SAO\"\n    },\n    {\n      \"headline\": \"Quá trẻ, chưa xứng đáng QBV!\",\n      \"subtext\": \"Ya",
+    "timestamp": "2026-06-13T22:47:57.158950"
+  },
+  {
+    "url": "https://vnexpress.net/tuong-quan-tran-khai-mac-world-cup-2026-5084393.html",
+    "source": "VnExpress",
+    "reason": "body_too_short",
+    "error": "",
+    "timestamp": "2026-06-13T22:47:57.925515"
+  },
+  {
+    "url": "https://vnexpress.net/barca-tuyen-bo-kien-chu-tich-real-toi-vu-khong-5085185.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 4: narration quá dài (46 > 45 từ)']. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"Barca Kiện Real: Sốc Toàn Tập!\",\n      \"subtext\": \"Cuộc chiến pháp lý nổ ra giữa hai gã khổng lồ.\",\n      \"narration\": \"Không thể tin được! Barcelona vừa nộp đơn yêu cầu hòa giải bắt buộc đối với Chủ tịch Real Madrid, Florentino Perez. Đây là bước đi đầu tiên trước khi khởi kiện hình sự về tội vu khống. Mối thù truyền kiếp giờ đây leo thang đến mức chưa từng có!\",\n      \"tag\": \"⚡ BREAKING\"\n    },\n    {\n      \"headline\": \"Perez Tố Barca: Bê Bối Lịc",
+    "timestamp": "2026-06-13T22:49:27.673389"
+  },
+  {
+    "url": "https://vnexpress.net/fifa-moi-hop-dong-cau-thu-deu-can-dieu-khoan-giai-phong-5085055.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 2: narration quá dài (47 > 45 từ)', 'Scene 3: narration quá dài (46 > 45 từ)']. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"FIFA CHẤN ĐỘNG! LUẬT MỚI!\",\n      \"subtext\": \"Mọi hợp đồng cầu thủ đều phải có điều khoản giải phóng.\",\n      \"narration\": \"Từ 1/1/2027, FIFA chính thức áp dụng điều",
+    "timestamp": "2026-06-13T22:50:12.036785"
+  },
+  {
+    "url": "https://vnexpress.net/cuu-hlv-tay-ban-nha-toi-tung-quat-guardiola-cam-mieng-vi-cu-luyen-thuyen-ve-bong-da-5084595.html",
+    "source": "VnExpress",
+    "reason": "no_valid_images",
+    "error": "",
+    "timestamp": "2026-06-13T22:50:14.267500"
+  },
+  {
+    "url": "https://vnexpress.net/real-chieu-mo-bernardo-silva-theo-y-mourinho-5084910.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 3: subtext quá nhiều từ (17 > 16)', 'Scene 3: narration quá dài (49 > 45 từ)', 'Scene 4: narration quá dài (46 > 45 từ)']. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"BOM TẤN! SILVA ĐẾN REAL!\",\n      \"subtext\": \"Thương vụ chớp nhoáng, gây sốc toàn châu Âu.\",\n      \"narration\": \"Fabrizio Romano vừa xác nhận! Bernardo Silva chính thức gia nhập Real Madrid! Chỉ 36 tiếng đàm phán, Kền Kền Trắng đã chốt hạ siêu sao Bồ Đào Nha. Một thương vụ thần tốc, khiến cả thế giới bóng đá phải ngỡ ngàng!\",\n      \"tag\": \"⚡ BREAKING\"\n    },\n    {\n      \"headline\": \"MOURINHO: KIẾN TRÚC SƯ!\",\n      \"subtext\": \"\\\"Người đặc biệt\\\" trự",
+    "timestamp": "2026-06-13T22:51:02.747853"
+  },
+  {
+    "url": "https://vnexpress.net/real-cong-bo-mourinho-5084769.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 2: narration quá dài (47 > 45 từ)', 'Scene 3: narration quá dài (50 > 45 từ)', 'Scene 4: narration quá dài (51 > 45 từ)']. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"MOURINHO TRỞ LẠI REAL!\",\n      \"subtext\": \"\\\"Người Đặc Biệt\\\" tái hợp Bernabeu!\",\n      \"narration\": \"Chấn động thế giới túc cầu! Jose Mourinho chính thức trở lại dẫn dắt Real Madrid! \\\"Người Đặc Biệt\\\" sẽ bắt đầu công việc từ 13/7, khởi động giai đoạn tiền mùa giải. Hãy sẵn sàng cho kỷ nguyên mới đầy kịch tính!\",\n      \"tag\": \"⚡ BREAKING\"\n    },\n    {\n      \"headline\": \"MOURINHO: THƯƠNG VỤ ĐẮT NHẤT!\",\n      \"subtext\": \"Real chi đậm 17.4 triệu USD",
+    "timestamp": "2026-06-13T22:51:51.884848"
   }
 ]
