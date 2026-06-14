@@ -3099,5 +3099,12 @@
     "reason": "script_gen_failed",
     "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 2: narration quá dài (47 > 45 từ)', 'Scene 3: narration quá dài (50 > 45 từ)', 'Scene 4: narration quá dài (51 > 45 từ)']. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"MOURINHO TRỞ LẠI REAL!\",\n      \"subtext\": \"\\\"Người Đặc Biệt\\\" tái hợp Bernabeu!\",\n      \"narration\": \"Chấn động thế giới túc cầu! Jose Mourinho chính thức trở lại dẫn dắt Real Madrid! \\\"Người Đặc Biệt\\\" sẽ bắt đầu công việc từ 13/7, khởi động giai đoạn tiền mùa giải. Hãy sẵn sàng cho kỷ nguyên mới đầy kịch tính!\",\n      \"tag\": \"⚡ BREAKING\"\n    },\n    {\n      \"headline\": \"MOURINHO: THƯƠNG VỤ ĐẮT NHẤT!\",\n      \"subtext\": \"Real chi đậm 17.4 triệu USD",
     "timestamp": "2026-06-13T22:51:51.884848"
+  },
+  {
+    "url": "https://vnexpress.net/tuong-quan-messi-ronaldo-tai-world-cup-5084537.html",
+    "source": "VnExpress",
+    "reason": "body_too_short",
+    "error": "",
+    "timestamp": "2026-06-14T22:55:48.626250"
   }
 ]
