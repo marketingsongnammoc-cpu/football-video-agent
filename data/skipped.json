@@ -3106,5 +3106,19 @@
     "reason": "body_too_short",
     "error": "",
     "timestamp": "2026-06-14T22:55:48.626250"
+  },
+  {
+    "url": "https://vnexpress.net/tuong-quan-messi-ronaldo-tai-world-cup-5084537.html",
+    "source": "VnExpress",
+    "reason": "body_too_short",
+    "error": "",
+    "timestamp": "2026-06-16T00:20:08.485264"
+  },
+  {
+    "url": "https://vnexpress.net/tien-dao-tay-ban-nha-lap-thong-so-hiem-o-world-cup-5086131.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 4: narration quá dài (50 > 45 từ)']. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"SAO TÂY BAN NHA LẬP KỶ LỤC ĐÁNG QUÊN!\",\n      \"subtext\": \"Tiền đạo Oyarzabal \\\"vô hình\\\" khó tin ở World Cup.\",\n      \"narration\": \"Một thống kê gây sốc vừa được ghi nhận tại World Cup 2026! Tiền đạo chủ lực của Tây Ban Nha, Oyarzabal, đã lập kỷ lục đáng quên nhất lịch sử giải đấu. Điều gì đã xảy ra với ngôi sao này?\",\n      \"tag\": \"👤 NGÔI SAO\"\n    },\n    {\n      \"headline\": \"BỨC TƯỜNG PHÒNG NGỰ CAPE VERDE!\",\n      \"subtext\": \"Tây Ban Nha kiểm soá",
+    "timestamp": "2026-06-16T00:21:01.947481"
   }
 ]
