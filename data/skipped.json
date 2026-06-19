@@ -3134,5 +3134,12 @@
     "reason": "script_gen_failed",
     "error": "script_gen failed sau 3 retry + fallback. Errors: [\"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"]. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"ÁP LỰC KHỦNG KHIẾP! TAM SƯ RUN RẨY?\",\n      \"subtext\": \"Phong độ bất ổn, Anh đối mặt Croatia cực mạnh.\",\n      \"narration\": \"Sau loạt giao hữu đáng thất vọng, tuyển Anh bước vào World Cup với gánh nặng ngàn cân. Đối thủ là Croatia, đội bóng mạnh mẽ. HLV Tuchel hứa hẹn \\\"Tam sư\\\" sẽ lột xác. Liệu họ có giữ lời?\",\n      \"tag\": \"🏆 GIẢI ĐẤU\"\n    },\n    {\n      \"headline\": \"MƯA BÀN THẮNG! HIỆP 1 BÙNG NỔ!\",\n      \"subtext\": \"Anh và Croatia rượt đuổi tỷ ",
     "timestamp": "2026-06-18T00:04:01.539661"
+  },
+  {
+    "url": "https://vnexpress.net/tuong-quan-messi-ronaldo-tai-world-cup-5084537.html",
+    "source": "VnExpress",
+    "reason": "body_too_short",
+    "error": "",
+    "timestamp": "2026-06-19T00:16:55.738176"
   }
 ]
