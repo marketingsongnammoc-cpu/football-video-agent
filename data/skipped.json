@@ -3148,5 +3148,19 @@
     "reason": "body_too_short",
     "error": "",
     "timestamp": "2026-06-19T22:16:17.756764"
+  },
+  {
+    "url": "https://vnexpress.net/thu-mon-len-dong-mang-ve-diem-so-lich-su-cho-curacao-o-world-cup-5088126.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 3: subtext quá nhiều từ (17 > 16)']. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"Thủ môn \\\"lên đồng\\\" cứu thua\",\n      \"subtext\": \"15 pha cản phá, kỷ lục World Cup 90 phút\",\n      \"narration\": \"Giới mộ điệu bóng đá đang phát sốt với màn trình diễn siêu hạng của thủ môn Eloy Room. Anh đã thực hiện tới 15 pha cứu thua trong 90 phút, một con số kỷ lục tại World Cup, khiến mọi nỗ lực của đối thủ trở nên vô vọng.\",\n      \"tag\": \"👤 NGÔI SAO\"\n    },\n    {\n      \"headline\": \"Lịch sử gọi tên Curacao!\",\n      \"subtext\": \"Quốc gia nhỏ nh",
+    "timestamp": "2026-06-21T22:51:13.545823"
+  },
+  {
+    "url": "https://vnexpress.net/trang-su-cua-messi-tai-doi-tuyen-argentina-5086979.html",
+    "source": "VnExpress",
+    "reason": "body_too_short",
+    "error": "",
+    "timestamp": "2026-06-21T22:51:14.369322"
   }
 ]
