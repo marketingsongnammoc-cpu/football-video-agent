@@ -3169,5 +3169,26 @@
     "reason": "body_too_short",
     "error": "",
     "timestamp": "2026-06-24T22:56:28.973257"
+  },
+  {
+    "url": "https://vnexpress.net/messi-va-ky-luc-18-ban-o-world-cup-5088950.html",
+    "source": "VnExpress",
+    "reason": "body_too_short",
+    "error": "",
+    "timestamp": "2026-06-25T23:55:45.538326"
+  },
+  {
+    "url": "https://vnexpress.net/xac-dinh-doi-xep-thu-ba-dau-tien-di-tiep-tai-world-cup-5089745.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 2: narration quá dài (48 > 45 từ)', 'Scene 4: narration quá dài (46 > 45 từ)']. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"Lịch sử! Đội thứ ba đầu tiên đi tiếp\",\n      \"subtext\": \"Bosnia & Herzegovina làm nên điều chưa từng có!\",\n      \"narration\": \"Chấn động World Cup 2026! Bosnia & Herzegovina đã làm nên lịch sử, trở thành",
+    "timestamp": "2026-06-25T23:56:39.968109"
+  },
+  {
+    "url": "https://vnexpress.net/trang-su-cua-messi-tai-doi-tuyen-argentina-5086979.html",
+    "source": "VnExpress",
+    "reason": "body_too_short",
+    "error": "",
+    "timestamp": "2026-06-25T23:56:40.728378"
   }
 ]
