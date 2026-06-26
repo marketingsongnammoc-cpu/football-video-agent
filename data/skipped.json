@@ -3190,5 +3190,33 @@
     "reason": "body_too_short",
     "error": "",
     "timestamp": "2026-06-25T23:56:40.728378"
+  },
+  {
+    "url": "https://vnexpress.net/messi-va-ky-luc-18-ban-o-world-cup-5088950.html",
+    "source": "VnExpress",
+    "reason": "body_too_short",
+    "error": "",
+    "timestamp": "2026-06-26T22:55:59.150783"
+  },
+  {
+    "url": "https://vnexpress.net/xac-dinh-doi-xep-thu-ba-dau-tien-di-tiep-tai-world-cup-5089745.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 4: narration quá dài (46 > 45 từ)']. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"Lịch sử gọi tên!\",\n      \"subtext\": \"Đội thứ ba đầu tiên đi tiếp World Cup 2026!\",\n      \"narration\": \"World Cup 2026 bùng nổ với thể thức mới! 48 đội, và lần đầu",
+    "timestamp": "2026-06-26T22:56:43.284558"
+  },
+  {
+    "url": "https://vnexpress.net/trang-su-cua-messi-tai-doi-tuyen-argentina-5086979.html",
+    "source": "VnExpress",
+    "reason": "body_too_short",
+    "error": "",
+    "timestamp": "2026-06-26T22:56:44.037906"
+  },
+  {
+    "url": "https://vnexpress.net/patrik-le-giang-toi-da-cho-hon-3-nam-de-khoac-ao-doi-tuyen-viet-nam-5089124.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 1: narration quá dài (47 > 45 từ)', 'Scene 2: narration quá dài (47 > 45 từ)']. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"Patrik Lê Giang: Giấc Mơ Thành Hiện Thực!\",\n      \"subtext\": \"Hơn 3 năm chờ đợi, cuối cùng cũng khoác áo tuyển Việt Nam.\",\n      \"narration\": \"Sau hành trình dài đầy nỗ lực và kiên trì, thủ môn Patrik Lê Giang đã chính thức hiện thực hóa giấc mơ. Anh sẽ cùng đội tuyển Việt Nam chinh phục những đỉnh cao mới. Một khoảnh khắc lịch sử!\",\n      \"tag\": \"⚡ BREAKING\"\n    },\n    {\n      \"headline\": \"Từ Slovakia Đến Việt Nam\",\n      \"subtext\": \"Thủ môn nhập",
+    "timestamp": "2026-06-26T22:57:31.842280"
   }
 ]
