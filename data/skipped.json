@@ -3218,5 +3218,12 @@
     "reason": "script_gen_failed",
     "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 1: narration quá dài (47 > 45 từ)', 'Scene 2: narration quá dài (47 > 45 từ)']. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"Patrik Lê Giang: Giấc Mơ Thành Hiện Thực!\",\n      \"subtext\": \"Hơn 3 năm chờ đợi, cuối cùng cũng khoác áo tuyển Việt Nam.\",\n      \"narration\": \"Sau hành trình dài đầy nỗ lực và kiên trì, thủ môn Patrik Lê Giang đã chính thức hiện thực hóa giấc mơ. Anh sẽ cùng đội tuyển Việt Nam chinh phục những đỉnh cao mới. Một khoảnh khắc lịch sử!\",\n      \"tag\": \"⚡ BREAKING\"\n    },\n    {\n      \"headline\": \"Từ Slovakia Đến Việt Nam\",\n      \"subtext\": \"Thủ môn nhập",
     "timestamp": "2026-06-26T22:57:31.842280"
+  },
+  {
+    "url": "https://vnexpress.net/messi-va-ky-luc-18-ban-o-world-cup-5088950.html",
+    "source": "VnExpress",
+    "reason": "body_too_short",
+    "error": "",
+    "timestamp": "2026-06-27T22:42:19.390553"
   }
 ]
