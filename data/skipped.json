@@ -3232,5 +3232,19 @@
     "reason": "body_too_short",
     "error": "",
     "timestamp": "2026-06-28T22:42:48.038532"
+  },
+  {
+    "url": "https://vnexpress.net/messi-va-ky-luc-18-ban-o-world-cup-5088950.html",
+    "source": "VnExpress",
+    "reason": "body_too_short",
+    "error": "",
+    "timestamp": "2026-06-29T22:40:27.471120"
+  },
+  {
+    "url": "https://vnexpress.net/nhung-cai-nhat-sau-vong-bang-world-cup-2026-5090794.html",
+    "source": "VnExpress",
+    "reason": "body_too_short",
+    "error": "",
+    "timestamp": "2026-06-29T22:40:27.989155"
   }
 ]
