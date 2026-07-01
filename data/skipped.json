@@ -3260,5 +3260,33 @@
     "reason": "body_too_short",
     "error": "",
     "timestamp": "2026-06-30T23:43:36.451632"
+  },
+  {
+    "url": "https://vnexpress.net/messi-va-ky-luc-18-ban-o-world-cup-5088950.html",
+    "source": "VnExpress",
+    "reason": "body_too_short",
+    "error": "",
+    "timestamp": "2026-07-01T22:58:20.240047"
+  },
+  {
+    "url": "https://vnexpress.net/nhung-cai-nhat-sau-vong-bang-world-cup-2026-5090794.html",
+    "source": "VnExpress",
+    "reason": "body_too_short",
+    "error": "",
+    "timestamp": "2026-07-01T22:58:20.461235"
+  },
+  {
+    "url": "https://vnexpress.net/kich-ban-nao-de-han-quoc-vao-vong-knock-out-world-cup-5090554.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 3: subtext quá nhiều từ (17 > 16)']. Fallback: Không parse được JSON:\nTuyệt vời! Dưới đây là 4 scenes video TikTok bóng đá theo yêu cầu của bạn, được tạo từ bài báo đã cung cấp:\n\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"HÀN QUỐC: TỪ 95% ĐẾN...\",\n      \"subtext\": \"Cơ hội đi tiếp bỗng chốc tan biến!\",\n      \"narration\": \"Từng có lúc, Hàn Quốc nắm chắc 95% cơ hội đi tiếp vào vòng knock-out World Cup. Nhưng chỉ sau vài ngày, mọi thứ đảo lộn! Các đội khác tính toán, chơi an toàn, đẩy 'Những chiến binh Taeguk' vào thế khó. Liệu phép màu có xảy ra?\",\n      \"tag\":",
+    "timestamp": "2026-07-01T22:59:17.185541"
+  },
+  {
+    "url": "https://vnexpress.net/xac-dinh-doi-xep-thu-ba-dau-tien-di-tiep-tai-world-cup-5089745.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 1: headline quá nhiều từ (11 > 8)', 'Scene 1: subtext quá nhiều từ (17 > 16)']. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+    "timestamp": "2026-07-01T23:00:04.398629"
   }
 ]
