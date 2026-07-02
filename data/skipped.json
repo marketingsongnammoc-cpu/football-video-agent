@@ -3288,5 +3288,19 @@
     "reason": "script_gen_failed",
     "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 1: headline quá nhiều từ (11 > 8)', 'Scene 1: subtext quá nhiều từ (17 > 16)']. Fallback: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
     "timestamp": "2026-07-01T23:00:04.398629"
+  },
+  {
+    "url": "https://vnexpress.net/nhung-cai-nhat-sau-vong-bang-world-cup-2026-5090794.html",
+    "source": "VnExpress",
+    "reason": "body_too_short",
+    "error": "",
+    "timestamp": "2026-07-02T22:47:28.430060"
+  },
+  {
+    "url": "https://vnexpress.net/kich-ban-nao-de-han-quoc-vao-vong-knock-out-world-cup-5090554.html",
+    "source": "vnexpress",
+    "reason": "exception",
+    "error": "No module named 'edge_tts'",
+    "timestamp": "2026-07-02T22:48:54.060674"
   }
 ]
