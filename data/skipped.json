@@ -3302,5 +3302,12 @@
     "reason": "exception",
     "error": "No module named 'edge_tts'",
     "timestamp": "2026-07-02T22:48:54.060674"
+  },
+  {
+    "url": "https://vnexpress.net/dau-bep-na-uy-cham-haaland-o-world-cup-the-nao-5093750.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: ['Scene 2: narration quá dài (49 > 45 từ)', 'Scene 3: subtext quá nhiều từ (19 > 16)', 'Scene 3: narration quá dài (46 > 45 từ)', 'Scene 4: narration quá dài (51 > 45 từ)']. Fallback: Không parse được JSON:\n```json\n{\n  \"scenes\": [\n    {\n      \"headline\": \"Haaland ăn gì? Bí mật WC!\",\n      \"subtext\": \"Na Uy mang cả quê hương nuôi siêu sao.\",\n      \"narration\": \"Để Haaland bùng nổ tại World Cup, Na Uy không tiếc tiền! Hàng trăm kg cá hồi, phô mai đặc trưng được vận chuyển xuyên lục địa. Đây không chỉ là bữa ăn, mà là chiến lược tiếp nhiên liệu cho cỗ máy ghi bàn!\",\n      \"tag\": \"👤 NGÔI SAO\"\n    },\n    {\n      \"headline\": \"300kg cá hồi! Na Uy chơi lớn!\",\n      \"subtext\": \"Mang cả đại dương sang Mỹ, ph",
+    "timestamp": "2026-07-05T20:15:32.601554"
   }
 ]
