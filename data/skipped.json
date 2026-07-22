@@ -4296,5 +4296,131 @@
     "reason": "script_gen_failed",
     "error": "script_gen failed sau 3 retry + fallback. Errors: [\"429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}\"]. Fallback: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}",
     "timestamp": "2026-07-21T20:21:58.683352"
+  },
+  {
+    "url": "https://vnexpress.net/messi-tung-mo-da-chung-ket-world-cup-voi-tay-ban-nha-5099146.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}\"]. Fallback: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}",
+    "timestamp": "2026-07-22T20:11:58.831035"
+  },
+  {
+    "url": "https://vnexpress.net/messi-ap-dao-cac-chi-so-truoc-chung-ket-world-cup-2026-5099207.html",
+    "source": "VnExpress",
+    "reason": "body_too_short",
+    "error": "",
+    "timestamp": "2026-07-22T20:12:00.722398"
+  },
+  {
+    "url": "https://vnexpress.net/ban-to-chuc-qua-bong-vang-vo-dich-world-cup-khong-dam-bao-chien-thang-5099709.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}\"]. Fallback: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}",
+    "timestamp": "2026-07-22T20:12:10.615178"
+  },
+  {
+    "url": "https://vnexpress.net/nhung-cai-ten-dinh-hinh-world-cup-2026-5100260.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}\"]. Fallback: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}",
+    "timestamp": "2026-07-22T20:12:20.536992"
+  },
+  {
+    "url": "https://vnexpress.net/chuyen-nhuong-giua-world-cup-dien-ra-the-nao-5099683.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}\"]. Fallback: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}",
+    "timestamp": "2026-07-22T20:12:31.553163"
+  },
+  {
+    "url": "https://vnexpress.net/dibu-martinez-nen-dau-du-chung-ket-world-cup-5099152.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}\"]. Fallback: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}",
+    "timestamp": "2026-07-22T20:12:41.893115"
+  },
+  {
+    "url": "https://vnexpress.net/cau-thu-lai-ha-lan-muon-giup-indonesia-dut-con-khat-vo-dich-asean-cup-5099221.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}\"]. Fallback: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}",
+    "timestamp": "2026-07-22T20:12:51.404171"
+  },
+  {
+    "url": "https://vnexpress.net/xuan-manh-nam-nay-doi-thu-o-asean-cup-2026-dong-deu-hon-5100508.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}\"]. Fallback: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}",
+    "timestamp": "2026-07-22T20:13:01.629639"
+  },
+  {
+    "url": "https://vnexpress.net/quy-ngai-bat-bai-cua-argentina-tai-world-cup-5099214.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}\"]. Fallback: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}",
+    "timestamp": "2026-07-22T20:13:11.552396"
+  },
+  {
+    "url": "https://vnexpress.net/doi-tuyen-viet-nam-hao-hung-tap-luyen-tai-thai-lan-5100111.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}\"]. Fallback: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}",
+    "timestamp": "2026-07-22T20:13:21.939293"
+  },
+  {
+    "url": "https://vnexpress.net/campuchia-dem-cau-thu-nhap-tich-brazil-du-asean-cup-2026-5100057.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}\"]. Fallback: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}",
+    "timestamp": "2026-07-22T20:13:31.703626"
+  },
+  {
+    "url": "https://vnexpress.net/italy-san-sang-chi-dam-cho-guardiola-5100509.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}\"]. Fallback: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}",
+    "timestamp": "2026-07-22T20:13:41.955004"
+  },
+  {
+    "url": "https://vnexpress.net/unai-simon-khi-gang-vang-khong-chi-den-tu-doi-tay-5100210.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}\"]. Fallback: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}",
+    "timestamp": "2026-07-22T20:13:51.953341"
+  },
+  {
+    "url": "https://vnexpress.net/olise-bi-to-bo-be-con-gai-5100234.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}\"]. Fallback: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}",
+    "timestamp": "2026-07-22T20:14:02.355668"
+  },
+  {
+    "url": "https://vnexpress.net/maldini-thuyet-phuc-guardiola-dan-dat-tuyen-italy-5099814.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}\"]. Fallback: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}",
+    "timestamp": "2026-07-22T20:14:13.025431"
+  },
+  {
+    "url": "https://vnexpress.net/huyen-thoai-bong-da-anh-kevin-keegan-qua-doi-o-tuoi-75-5099708.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}\"]. Fallback: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}",
+    "timestamp": "2026-07-22T20:14:23.005390"
+  },
+  {
+    "url": "https://vnexpress.net/dinh-bac-khong-hai-long-khi-xuan-son-ham-ghi-ban-5099059.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}\"]. Fallback: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}",
+    "timestamp": "2026-07-22T20:14:34.279238"
+  },
+  {
+    "url": "https://vnexpress.net/hlv-myanmar-lo-bi-hieu-nham-khi-noi-ve-cau-thu-nhap-tich-viet-nam-5099028.html",
+    "source": "VnExpress",
+    "reason": "script_gen_failed",
+    "error": "script_gen failed sau 3 retry + fallback. Errors: [\"429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}\"]. Fallback: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}",
+    "timestamp": "2026-07-22T20:14:44.674210"
   }
 ]
